@@ -141,40 +141,40 @@
         }
 
         function cargarDesdeCSV() {
-            fetch(URL_CSV)
-                .then(resp => {
-                    if (!resp.ok) {
-                        throw new Error(`HTTP error! status: ${resp.status}`);
-                    }
-                    return resp.text();
-                })
-                .then(data => {
-                    const registros = parseCSV(data);
-                    actividades = { sabado: [], domingo: [] };
-                    registros.forEach(r => {
-                        // Asegúrate de que las columnas existan y no estén vacías
-                        if (r["Hora"] && r["Título"] && r["Tipo"] && r["Duración"] && r["Día"]) {
-                            const actividad = {
-                                hora: r["Hora"],
-                                titulo: r["Título"],
-                                tipo: r["Tipo"],
-                                duracion: r["Duración"]
-                            };
-                            const dia = r["Día"].toLowerCase();
-                            if (dia.includes("sab")) actividades.sabado.push(actividad);
-                            else if (dia.includes("dom")) actividades.domingo.push(actividad);
-                        } else {
-                            console.warn("Fila con datos incompletos o incorrectos:", r);
-                        }
-                    });
-                    renderHorario();
-                    actualizarFiltroActivo();
-                })
-                .catch(err => {
-                    console.error("Error cargando CSV:", err);
-                    document.getElementById("horario").innerHTML = "<p class='text-center text-red-500'>Error al cargar datos. Asegúrate de que el archivo 'horario.csv' esté en el mismo directorio y sea accesible.</p>";
-                });
-        }
+    fetch(URL_CSV)
+        .then(resp => {
+            if (!resp.ok) {
+                throw new Error(`HTTP error! status: ${resp.status}`);
+            }
+            return resp.text();
+        })
+        .then(data => {
+            const registros = parseCSV(data);
+            actividades = { sabado: [], domingo: [] };
+            registros.forEach(r => {
+                // CAMBIO: Usamos las claves en minúsculas para coincidir con tu CSV
+                if (r["hora"] && r["titulo"] && r["tipo"] && r["duracion"] && r["dia"]) {
+                    const actividad = {
+                        hora: r["hora"],     // Cambio aquí
+                        titulo: r["titulo"], // Cambio aquí
+                        tipo: r["tipo"],     // Cambio aquí
+                        duracion: r["duracion"] // Cambio aquí
+                    };
+                    const dia = r["dia"]?.toLowerCase(); // Cambio aquí (y añade ?. para seguridad)
+                    if (dia?.includes("sab")) actividades.sabado.push(actividad);
+                    else if (dia?.includes("dom")) actividades.domingo.push(actividad);
+                } else {
+                    console.warn("Fila con datos incompletos o incorrectos:", r);
+                }
+            });
+            renderHorario();
+            actualizarFiltroActivo();
+        })
+        .catch(err => {
+            console.error("Error cargando CSV:", err);
+            document.getElementById("horario").innerHTML = "<p class='text-center text-red-500'>Error al cargar datos. Asegúrate de que el archivo 'horario.csv' esté en el mismo directorio y sea accesible.</p>";
+        });
+}
 
         document.getElementById("dia1Btn").addEventListener("click", () => {
             diaActual = "sabado";
