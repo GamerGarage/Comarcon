@@ -5,6 +5,18 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <title>Horario - La Comarcón</title>
+    <style>
+        /* Estilo básico para el botón de favorito */
+        .favorite-btn {
+            cursor: pointer;
+            font-size: 1.5rem; /* Tamaño del icono */
+            color: #ccc; /* Color por defecto (no favorito) */
+            transition: color 0.2s;
+        }
+        .favorite-btn.is-favorite {
+            color: #FFD700; /* Color cuando es favorito (dorado) */
+        }
+    </style>
 </head>
 <body class="bg-gray-100 text-gray-800">
     <div class="max-w-md mx-auto p-4">
@@ -20,6 +32,7 @@
 
         <div class="flex overflow-x-auto mb-4 space-x-2">
             <button class="filter-btn px-3 py-1 text-sm bg-gray-200 rounded" data-categoria="todas">Todas</button>
+            <button class="filter-btn px-3 py-1 text-sm bg-yellow-300 text-yellow-900 rounded" data-categoria="favoritos">⭐ Favoritos</button>
             <button class="filter-btn px-3 py-1 text-sm bg-purple-200 rounded" data-categoria="rol_mesa">Rol de mesa</button>
             <button class="filter-btn px-3 py-1 text-sm bg-pink-200 rounded" data-categoria="rol_vivo">Rol en vivo</button>
             <button class="filter-btn px-3 py-1 text-sm bg-blue-200 rounded" data-categoria="videojuegos">Videojuegos</button>
@@ -39,14 +52,19 @@
         let actividades = { sabado: [], domingo: [] };
         let diaActual = "sabado";
         let filtroActual = "todas";
+        // Almacén para los IDs de actividades favoritas
+        let favoritos = new Set(JSON.parse(localStorage.getItem('horarioFavoritos')) || []);
 
-        // ¡CAMBIO AQUÍ! Ahora apunta al archivo local en tu repositorio.
         const URL_CSV = "./horario.csv"; // Asegúrate de que el nombre y la ruta coincidan con tu archivo CSV
 
         function agruparPorHora(lista) {
             const mapa = {};
             lista.forEach(act => {
-                if (filtroActual !== "todas" && act.tipo !== filtroActual) return;
+                // Nuevo filtro para favoritos
+                if (filtroActual === "favoritos" && !favoritos.has(act.id)) return;
+                // Filtro existente por categoría
+                if (filtroActual !== "todas" && filtroActual !== "favoritos" && act.tipo !== filtroActual) return;
+
                 if (!mapa[act.hora]) mapa[act.hora] = [];
                 mapa[act.hora].push(act);
             });
@@ -58,26 +76,43 @@
             contenedor.innerHTML = "";
             const actividadesPorHora = agruparPorHora(actividades[diaActual]);
             const horas = Object.keys(actividadesPorHora).sort();
+
             if (horas.length === 0) {
-                contenedor.innerHTML = "<p class='text-center text-gray-500'>No hay actividades para esta selección.</p>";
+                if (filtroActual === "favoritos") {
+                    contenedor.innerHTML = "<p class='text-center text-gray-500'>No tienes actividades marcadas como favoritas. Marca la estrella ⭐ en alguna actividad para añadirla aquí.</p>";
+                } else {
+                    contenedor.innerHTML = "<p class='text-center text-gray-500'>No hay actividades para esta selección.</p>";
+                }
                 return;
             }
+
             horas.forEach(hora => {
                 const bloque = document.createElement("div");
                 bloque.innerHTML = `<h3 class="text-sm font-semibold text-gray-600 mb-2">🕒 ${hora}</h3>`;
                 actividadesPorHora[hora].forEach(act => {
                     const card = document.createElement("div");
                     card.className = "bg-white p-4 mb-2 rounded shadow flex justify-between items-center";
+
+                    // Determina si la actividad actual es favorita
+                    const isFavorite = favoritos.has(act.id) ? 'is-favorite' : '';
+
                     card.innerHTML = `
                         <div>
                             <h2 class="text-lg font-bold">${act.titulo}</h2>
                             <span class="inline-block mt-1 px-2 py-1 text-xs rounded-full ${getColor(act.tipo)}">${formateaCategoria(act.tipo)}</span>
                         </div>
-                        <div class="text-sm text-gray-500 ml-4 whitespace-nowrap">⏱ ${act.duracion}</div>
+                        <div class="flex items-center">
+                            <div class="text-sm text-gray-500 ml-4 whitespace-nowrap mr-2">⏱ ${act.duracion}</div>
+                            <span class="favorite-btn ${isFavorite}" data-id="${act.id}">⭐</span>
+                            </div>
                     `;
                     bloque.appendChild(card);
                 });
                 contenedor.appendChild(bloque);
+            });
+            // Añadir event listeners a los nuevos botones de favorito
+            document.querySelectorAll('.favorite-btn').forEach(button => {
+                button.addEventListener('click', toggleFavorite);
             });
         }
 
@@ -91,7 +126,8 @@
                 concursos: "Concursos",
                 talleres: "Talleres",
                 charlas: "Charlas",
-                otros: "Otros"
+                otros: "Otros",
+                favoritos: "Favoritos" // Aunque no es una categoría de CSV, lo añadimos aquí para el filtro
             };
             return mapa[tipo] || tipo;
         }
@@ -121,9 +157,26 @@
             });
         }
 
+        // Función para alternar el estado de favorito
+        function toggleFavorite(event) {
+            const button = event.currentTarget;
+            const id = button.dataset.id; // Obtenemos el ID de la actividad
+
+            if (favoritos.has(id)) {
+                favoritos.delete(id); // Desmarcar
+                button.classList.remove('is-favorite');
+            } else {
+                favoritos.add(id); // Marcar
+                button.classList.add('is-favorite');
+            }
+            // Guarda la lista actualizada en localStorage
+            localStorage.setItem('horarioFavoritos', JSON.stringify(Array.from(favoritos)));
+            renderHorario(); // Vuelve a renderizar para aplicar el filtro si es necesario
+        }
+
+
         function parseCSV(text) {
             const lines = text.trim().split("\n");
-            // Filtra las líneas vacías antes de procesar
             const validLines = lines.filter(line => line.trim() !== '');
 
             if (validLines.length === 0) {
@@ -141,40 +194,42 @@
         }
 
         function cargarDesdeCSV() {
-    fetch(URL_CSV)
-        .then(resp => {
-            if (!resp.ok) {
-                throw new Error(`HTTP error! status: ${resp.status}`);
-            }
-            return resp.text();
-        })
-        .then(data => {
-            const registros = parseCSV(data);
-            actividades = { sabado: [], domingo: [] };
-            registros.forEach(r => {
-                // CAMBIO: Usamos las claves en minúsculas para coincidir con tu CSV
-                if (r["hora"] && r["titulo"] && r["tipo"] && r["duracion"] && r["dia"]) {
-                    const actividad = {
-                        hora: r["hora"],     // Cambio aquí
-                        titulo: r["titulo"], // Cambio aquí
-                        tipo: r["tipo"],     // Cambio aquí
-                        duracion: r["duracion"] // Cambio aquí
-                    };
-                    const dia = r["dia"]?.toLowerCase(); // Cambio aquí (y añade ?. para seguridad)
-                    if (dia?.includes("sab")) actividades.sabado.push(actividad);
-                    else if (dia?.includes("dom")) actividades.domingo.push(actividad);
-                } else {
-                    console.warn("Fila con datos incompletos o incorrectos:", r);
-                }
-            });
-            renderHorario();
-            actualizarFiltroActivo();
-        })
-        .catch(err => {
-            console.error("Error cargando CSV:", err);
-            document.getElementById("horario").innerHTML = "<p class='text-center text-red-500'>Error al cargar datos. Asegúrate de que el archivo 'horario.csv' esté en el mismo directorio y sea accesible.</p>";
-        });
-}
+            fetch(URL_CSV)
+                .then(resp => {
+                    if (!resp.ok) {
+                        throw new Error(`HTTP error! status: ${resp.status}`);
+                    }
+                    return resp.text();
+                })
+                .then(data => {
+                    const registros = parseCSV(data);
+                    actividades = { sabado: [], domingo: [] };
+                    registros.forEach(r => {
+                        // Asegúrate de que las columnas existan y no estén vacías
+                        // Y AHORA ESPERAMOS TAMBIÉN LA COLUMNA 'id'
+                        if (r["id"] && r["hora"] && r["titulo"] && r["tipo"] && r["duracion"] && r["dia"]) {
+                            const actividad = {
+                                id: r["id"], // Capturamos el ID
+                                hora: r["hora"],
+                                titulo: r["titulo"],
+                                tipo: r["tipo"],
+                                duracion: r["duracion"]
+                            };
+                            const dia = r["dia"]?.toLowerCase();
+                            if (dia?.includes("sab")) actividades.sabado.push(actividad);
+                            else if (dia?.includes("dom")) actividades.domingo.push(actividad);
+                        } else {
+                            console.warn("Fila con datos incompletos o incorrectos (o falta 'id'):", r);
+                        }
+                    });
+                    renderHorario();
+                    actualizarFiltroActivo();
+                })
+                .catch(err => {
+                    console.error("Error cargando CSV:", err);
+                    document.getElementById("horario").innerHTML = "<p class='text-center text-red-500'>Error al cargar datos. Asegúrate de que el archivo 'horario.csv' esté en el mismo directorio y sea accesible.</p>";
+                });
+        }
 
         document.getElementById("dia1Btn").addEventListener("click", () => {
             diaActual = "sabado";
@@ -202,9 +257,7 @@
             });
         });
 
-        // Carga inicial
         cargarDesdeCSV();
     </script>
 </body>
 </html>
-
