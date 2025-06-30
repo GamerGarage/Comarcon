@@ -20,6 +20,20 @@
         .favorite-btn.is-favorite {
             color: #FFD700; /* Color cuando es favorito (dorado) */
         }
+        .detalle-actividad {
+            display: none;
+            margin-top: 0.5rem;
+            font-size: 0.9rem;
+            color: #555;
+            background-color: #f9fafb;
+            padding: 0.75rem 1rem;
+            border-radius: 0.375rem;
+            border: 1px solid #e5e7eb;
+        }
+        .actividad:hover {
+            cursor: pointer;
+            background-color: #f3f4f6;
+        }
     </style>
 </head>
 <body class="bg-gray-100 text-gray-800">
@@ -49,7 +63,7 @@
         </div>
 
         <div id="horario" class="space-y-4">
-            </div>
+        </div>
     </div>
 
     <script>
@@ -95,7 +109,7 @@
                 bloque.innerHTML = `<h3 class="text-sm font-semibold text-gray-600 mb-2">🕒 ${hora}</h3>`;
                 actividadesPorHora[hora].forEach(act => {
                     const card = document.createElement("div");
-                    card.className = "bg-white p-4 mb-2 rounded shadow flex justify-between items-center";
+                    card.className = "bg-white p-4 mb-2 rounded shadow flex justify-between items-center actividad";
 
                     // Determina si la actividad actual es favorita
                     const isFavoriteClass = favoritos.has(act.id) ? 'is-favorite' : '';
@@ -106,18 +120,31 @@
                         <div>
                             <h2 class="text-lg font-bold">${act.titulo}</h2>
                             <span class="inline-block mt-1 px-2 py-1 text-xs rounded-full ${getColor(act.tipo)}">${formateaCategoria(act.tipo)}</span>
+                            <div class="detalle-actividad">${act.detalle || 'No hay información adicional.'}</div>
                         </div>
                         <div class="flex items-center">
                             <div class="text-sm text-gray-500 ml-4 whitespace-nowrap mr-2">⏱ ${act.duracion}</div>
                             <span class="favorite-btn ${isFavoriteClass}" data-id="${act.id}">
                                 <i class="${starIconClass} fa-star"></i>
                             </span>
-                            </div>
+                        </div>
                     `;
+                    // Añadimos evento para mostrar/ocultar detalle al clicar en la card (excepto en la estrella)
+                    card.addEventListener('click', (e) => {
+                        if (e.target.closest('.favorite-btn')) return; // No hacer toggle si clic en favorito
+                        const detalle = card.querySelector('.detalle-actividad');
+                        if (detalle.style.display === 'block') {
+                            detalle.style.display = 'none';
+                        } else {
+                            detalle.style.display = 'block';
+                        }
+                    });
+
                     bloque.appendChild(card);
                 });
                 contenedor.appendChild(bloque);
             });
+
             // Añadir event listeners a los nuevos botones de favorito
             document.querySelectorAll('.favorite-btn').forEach(button => {
                 button.addEventListener('click', toggleFavorite);
@@ -184,13 +211,12 @@
             }
             // Guarda la lista actualizada en localStorage
             localStorage.setItem('horarioFavoritos', JSON.stringify(Array.from(favoritos)));
-            
+
             // Si el filtro actual es "favoritos", necesitamos re-renderizar para ocultar/mostrar
             if (filtroActual === "favoritos") {
                 renderHorario();
             }
         }
-
 
         function parseCSV(text) {
             const lines = text.trim().split("\n");
@@ -229,7 +255,8 @@
                                 hora: r["hora"],
                                 titulo: r["titulo"],
                                 tipo: r["tipo"],
-                                duracion: r["duracion"]
+                                duracion: r["duracion"],
+                                detalle: r["detalle"] || "" // Asumiendo que la columna 'detalle' existe en el CSV
                             };
                             const dia = r["dia"]?.toLowerCase();
                             if (dia?.includes("sab")) actividades.sabado.push(actividad);
