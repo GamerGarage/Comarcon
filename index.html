@@ -4,6 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <title>Horario - La Comarcón</title>
     <style>
         /* Estilo básico para el botón de favorito */
@@ -12,6 +13,9 @@
             font-size: 1.5rem; /* Tamaño del icono */
             color: #ccc; /* Color por defecto (no favorito) */
             transition: color 0.2s;
+            display: inline-flex; /* Asegura que el icono esté centrado si hay espacio extra */
+            align-items: center;
+            justify-content: center;
         }
         .favorite-btn.is-favorite {
             color: #FFD700; /* Color cuando es favorito (dorado) */
@@ -79,7 +83,7 @@
 
             if (horas.length === 0) {
                 if (filtroActual === "favoritos") {
-                    contenedor.innerHTML = "<p class='text-center text-gray-500'>No tienes actividades marcadas como favoritas. Marca la estrella ⭐ en alguna actividad para añadirla aquí.</p>";
+                    contenedor.innerHTML = "<p class='text-center text-gray-500'>No tienes actividades marcadas como favoritas. Marca el icono de estrella en alguna actividad para añadirla aquí.</p>";
                 } else {
                     contenedor.innerHTML = "<p class='text-center text-gray-500'>No hay actividades para esta selección.</p>";
                 }
@@ -94,7 +98,9 @@
                     card.className = "bg-white p-4 mb-2 rounded shadow flex justify-between items-center";
 
                     // Determina si la actividad actual es favorita
-                    const isFavorite = favoritos.has(act.id) ? 'is-favorite' : '';
+                    const isFavoriteClass = favoritos.has(act.id) ? 'is-favorite' : '';
+                    // Determina la clase de Font Awesome para la estrella (rellena o contorno)
+                    const starIconClass = favoritos.has(act.id) ? 'fas' : 'far';
 
                     card.innerHTML = `
                         <div>
@@ -103,7 +109,9 @@
                         </div>
                         <div class="flex items-center">
                             <div class="text-sm text-gray-500 ml-4 whitespace-nowrap mr-2">⏱ ${act.duracion}</div>
-                            <span class="favorite-btn ${isFavorite}" data-id="${act.id}">⭐</span>
+                            <span class="favorite-btn ${isFavoriteClass}" data-id="${act.id}">
+                                <i class="${starIconClass} fa-star"></i>
+                            </span>
                             </div>
                     `;
                     bloque.appendChild(card);
@@ -127,7 +135,7 @@
                 talleres: "Talleres",
                 charlas: "Charlas",
                 otros: "Otros",
-                favoritos: "Favoritos" // Aunque no es una categoría de CSV, lo añadimos aquí para el filtro
+                favoritos: "Favoritos"
             };
             return mapa[tipo] || tipo;
         }
@@ -159,19 +167,28 @@
 
         // Función para alternar el estado de favorito
         function toggleFavorite(event) {
-            const button = event.currentTarget;
+            const button = event.currentTarget; // El span .favorite-btn
+            const icon = button.querySelector('i'); // El elemento <i> dentro del span (el icono de estrella)
             const id = button.dataset.id; // Obtenemos el ID de la actividad
 
             if (favoritos.has(id)) {
                 favoritos.delete(id); // Desmarcar
-                button.classList.remove('is-favorite');
+                button.classList.remove('is-favorite'); // Quita la clase de color
+                icon.classList.remove('fas'); // Cambia a estrella vacía
+                icon.classList.add('far');
             } else {
                 favoritos.add(id); // Marcar
-                button.classList.add('is-favorite');
+                button.classList.add('is-favorite'); // Añade la clase de color
+                icon.classList.remove('far'); // Cambia a estrella rellena
+                icon.classList.add('fas');
             }
             // Guarda la lista actualizada en localStorage
             localStorage.setItem('horarioFavoritos', JSON.stringify(Array.from(favoritos)));
-            renderHorario(); // Vuelve a renderizar para aplicar el filtro si es necesario
+            
+            // Si el filtro actual es "favoritos", necesitamos re-renderizar para ocultar/mostrar
+            if (filtroActual === "favoritos") {
+                renderHorario();
+            }
         }
 
 
@@ -205,8 +222,7 @@
                     const registros = parseCSV(data);
                     actividades = { sabado: [], domingo: [] };
                     registros.forEach(r => {
-                        // Asegúrate de que las columnas existan y no estén vacías
-                        // Y AHORA ESPERAMOS TAMBIÉN LA COLUMNA 'id'
+                        // Asegúrate de que las columnas existan y no estén vacías, incluyendo 'id'
                         if (r["id"] && r["hora"] && r["titulo"] && r["tipo"] && r["duracion"] && r["dia"]) {
                             const actividad = {
                                 id: r["id"], // Capturamos el ID
