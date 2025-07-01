@@ -189,12 +189,12 @@
                         if (r["id"] && r["hora"] && r["titulo"] && r["tipo"] && r["duracion"] && r["dia"]) {
                             const actividad = {
                                 id: r["id"],
-                                hora: r["hora"],
-                                titulo: r["titulo"],
-                                tipo: r["tipo"],
-                                duracion: r["duracion"],
-                                detalle: r["detalle"] || "",
-                                enlace: r["enlace"] || ""
+                                hora: r["hora"]?.trim(),
+                                titulo: r["titulo"]?.trim(),
+                                tipo: r["tipo"]?.trim(),
+                                duracion: r["duracion"]?.trim(),
+                                detalle: r["detalle"]?.trim() || "",
+                                enlace: r["enlace"]?.trim() || ""
                             };
                             const dia = r["dia"]?.toLowerCase();
                             if (dia.includes("sab")) actividades.sabado.push(actividad);
