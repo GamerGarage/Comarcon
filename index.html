@@ -29,6 +29,7 @@
         .logo-img {
             height: 50px; /* Ajusta el tamaño según necesites */
             width: auto; /* Mantiene la proporción */
+            cursor: pointer; /* Indica que es clicable */
         }
 
         .favorite-btn {
@@ -76,24 +77,26 @@
             padding: 1rem;
             text-align: center;
             flex-grow: 1; 
-            /* Agregamos overflow para el scroll de la imagen */
             overflow: auto; 
-            -webkit-overflow-scrolling: touch; /* Suaviza el scroll en iOS */
+            -webkit-overflow-scrolling: touch; 
         }
         /* Estilos específicos para la imagen del mapa */
         #evento-mapa-img {
-            max-width: 100%; /* La imagen no será más ancha que su contenedor */
-            height: auto; /* Mantiene la proporción */
-            display: block; /* Elimina espacio extra bajo la imagen */
-            margin: 0 auto; /* Centrar la imagen si no ocupa el 100% del ancho */
+            max-width: 100%; 
+            height: auto; 
+            display: block; 
+            margin: 0 auto; 
             border-radius: 8px;
             box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
 
-            /* Clave para permitir el scroll si la imagen es más grande que su contenedor */
-            /* Si la imagen JPG ya es muy grande, esto hará que sea scrollable */
-            /* Si quieres forzar un "zoom inicial" para que el usuario siempre pueda hacer scroll,
-               puedes darle un width o height mayor al 100%, por ejemplo: */
-            /* width: 150%; */ /* Esto haría que la imagen ocupe 150% del ancho del contenedor y sea scrollable */
+        /* Estilo para los títulos H2 dentro del mapa-container */
+        #mapa-container h2 {
+            color: #4a4a4a; /* Un color oscuro para el texto principal */
+            margin-bottom: 0.75rem; /* Espacio debajo del título */
+            font-size: 1.5rem; /* Tamaño de fuente ligeramente más grande */
+            border-bottom: 2px solid #eee; /* Línea separadora */
+            padding-bottom: 0.5rem; /* Espacio entre el texto y la línea */
         }
     </style>
 </head>
@@ -101,11 +104,11 @@
     <div class="max-w-md mx-auto p-4">
         <div class="mb-4">
             <div class="flex items-center">
-                <img src="estrella-trans.png" alt="Logo La Comarcón" class="logo-img mr-4" /> 
+                <img src="estrella-trans.png" alt="Logo La Comarcón" class="logo-img mr-4" id="logo-btn" /> 
                 <h1 id="main-title" class="text-2xl font-bold mx-auto">Horario</h1> 
+                
                 <a href="#" id="nav-toggle-btn" class="ml-4">
-                    <i class="fas fa-map-marked-alt nav-icon"></i>
-                </a>
+                    <i class="fas fa-info nav-icon"></i> </a>
             </div>
             <p class="text-sm text-gray-200 text-center mt-1">Torrevieja · 2025</p>
         </div>
@@ -134,8 +137,21 @@
         </div>
 
         <div id="mapa-container">
-            <h2 class="text-xl font-bold mb-4">Mapa del Evento</h2>
-            <img id="evento-mapa-img" src="mapa_recinto.png" alt="Mapa del evento">            
+            <h2 class="text-xl font-bold mb-4">MAPA</h2>
+            <img id="evento-mapa-img" src="mapa_recinto.jpg" alt="Mapa del evento">
+            <p class="mt-4 text-sm text-gray-600">Desplázate por la imagen. Para hacer zoom, usa las funciones de zoom de tu navegador (Ctrl/Cmd + Rueda del ratón).</p>
+            
+            <h2 class="text-xl font-bold mt-8 mb-4">INFORMACIÓN</h2>
+            <div class="text-gray-700 text-left p-4 bg-white rounded-lg shadow">
+                <p class="mb-2">Aquí encontrarás información relevante sobre el evento. Nuestro objetivo es que tu experiencia sea lo más placentera y fluida posible.</p>
+                <p class="mb-2">**Horario de inscripción en actividades:**</p>
+                <ul class="list-disc list-inside ml-4 mb-2">
+                    <li>**Sábado:** 10:00h - 18:00h</li>
+                    <li>**Domingo:** 10:00h - 14:00h</li>
+                </ul>
+                <p class="mb-2">Puedes realizar la inscripción en el **Punto de Información** situado en la entrada principal del recinto. Aceptamos pagos en efectivo y tarjeta para las actividades con coste.</p>
+                <p class="mt-4 text-sm text-gray-600">Si tienes más dudas, no dudes en preguntar a nuestro personal de staff.</p>
+            </div>
         </div>
     </div>
 
@@ -152,6 +168,7 @@
         const navToggleIcon = navToggleButton.querySelector('i');
         const horarioContainer = document.getElementById('horario-container');
         const mapaContainer = document.getElementById('mapa-container'); 
+        const logoBtn = document.getElementById('logo-btn'); // Nuevo: referencia al logo
 
         // Estado actual: 'horario' o 'mapa'
         let currentView = 'horario'; 
@@ -323,28 +340,28 @@
                 });
         }
 
-        // Función para cambiar entre Horario y Mapa
+        // Función para cambiar entre Horario y Mapa/Información
         function toggleView() {
             if (currentView === 'horario') {
-                // Cambiar a vista de mapa
+                // Cambiar a vista de mapa/información
                 horarioContainer.style.display = 'none';
                 mapaContainer.style.display = 'block'; 
-                mainTitle.textContent = 'MAPA';
-                navToggleIcon.classList.remove('fa-map-marked-alt');
-                navToggleIcon.classList.add('fa-calendar-alt'); // Icono de calendario
-                currentView = 'mapa';
+                mainTitle.textContent = 'INFORMACIÓN'; // Cambiar título a INFORMACIÓN
+                navToggleIcon.classList.remove('fa-info'); // Quitar icono 'i'
+                navToggleIcon.classList.add('fa-arrow-left'); // Poner icono de flecha
+                currentView = 'mapa-info'; // Nuevo estado para esta vista
             } else {
                 // Cambiar a vista de horario
                 mapaContainer.style.display = 'none';
                 horarioContainer.style.display = 'block'; 
-                mainTitle.textContent = 'Horario';
-                navToggleIcon.classList.remove('fa-calendar-alt');
-                navToggleIcon.classList.add('fa-map-marked-alt'); // Icono de mapa
+                mainTitle.textContent = 'Horario'; // Volver a Horario
+                navToggleIcon.classList.remove('fa-arrow-left'); // Quitar icono de flecha
+                navToggleIcon.classList.add('fa-info'); // Poner icono 'i'
                 currentView = 'horario';
             }
         }
 
-        // Event Listeners para los botones de día (si estamos en horario)
+        // Event Listeners para los botones de día (solo si estamos en horario)
         document.getElementById("dia1Btn").addEventListener("click", () => {
             if (currentView === 'horario') { 
                 diaActual = "sabado";
@@ -372,6 +389,14 @@
             e.preventDefault(); 
             toggleView();
         });
+
+        // Nuevo: Listener para el logo - siempre vuelve al horario
+        logoBtn.addEventListener('click', () => {
+            if (currentView !== 'horario') { // Solo si no estamos ya en el horario
+                toggleView(); // Usa la misma función para cambiar de vuelta al horario
+            }
+        });
+
 
         // Cargar datos al inicio
         cargarDesdeCSV();
