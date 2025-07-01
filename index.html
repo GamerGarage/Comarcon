@@ -23,6 +23,8 @@
             font-family: 'Permanent Marker', cursive;
             color: #ecf0f1; /* Un color claro para que resalte sobre el morado */
             text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3); /* Sombra para mejor legibilidad */
+            /* Transición para el tamaño de la fuente para un cambio suave */
+            transition: font-size 0.3s ease-in-out;
         }
 
         /* Estilos para la imagen del logo */
@@ -98,17 +100,25 @@
             border-bottom: 2px solid #eee; /* Línea separadora */
             padding-bottom: 0.5rem; /* Espacio entre el texto y la línea */
         }
+
+        /* Clases de Tailwind para el tamaño del h1 (las añadimos en el JS) */
+        .text-size-horario {
+            font-size: 2.5rem; /* O cualquier tamaño que te guste para "Horario" */
+        }
+        .text-size-informacion {
+            font-size: 2.2rem; /* Un poco más pequeña para "INFORMACIÓN" */
+        }
     </style>
 </head>
 <body class="text-gray-800">
     <div class="max-w-md mx-auto p-4">
         <div class="mb-4">
-            <div class="flex items-center">
-                <img src="estrella-trans.png" alt="Logo La Comarcón" class="logo-img mr-4" id="logo-btn" /> 
+            <div class="flex items-center justify-between"> <img src="estrella-trans.png" alt="Logo La Comarcón" class="logo-img mr-4" id="logo-btn" /> 
                 <h1 id="main-title" class="text-2xl font-bold mx-auto">Horario</h1> 
                 
-                <a href="#" id="nav-toggle-btn" class="ml-4 mr-4">
-                    <i class="fas fa-info nav-icon"></i> </a>
+                <a href="#" id="nav-toggle-btn" class="ml-4 mr-4"> 
+                    <i class="fas fa-info nav-icon"></i> 
+                </a>
             </div>
             <p class="text-sm text-gray-200 text-center mt-1">Torrevieja · 2025</p>
         </div>
@@ -138,7 +148,7 @@
 
         <div id="mapa-container">
             <h2 class="text-xl font-bold mb-4">MAPA</h2>
-            <img id="evento-mapa-img" src="mapa_recinto.png" alt="Mapa del evento">
+            <img id="evento-mapa-img" src="image_73eb5d.png" alt="Mapa del evento">
             <p class="mt-4 text-sm text-gray-600">Desplázate por la imagen. Para hacer zoom, usa las funciones de zoom de tu navegador (Ctrl/Cmd + Rueda del ratón).</p>
             
             <h2 class="text-xl font-bold mt-8 mb-4">INFORMACIÓN</h2>
@@ -168,7 +178,7 @@
         const navToggleIcon = navToggleButton.querySelector('i');
         const horarioContainer = document.getElementById('horario-container');
         const mapaContainer = document.getElementById('mapa-container'); 
-        const logoBtn = document.getElementById('logo-btn'); // Nuevo: referencia al logo
+        const logoBtn = document.getElementById('logo-btn'); 
 
         // Estado actual: 'horario' o 'mapa'
         let currentView = 'horario'; 
@@ -336,28 +346,43 @@
                             else if (dia.includes("dom")) actividades.domingo.push(actividad);
                         }
                     });
+                    // Al cargar, aseguramos que el título inicial sea el correcto
+                    updateTitleAndIcon('horario'); 
                     renderHorario();
                 });
+        }
+
+        // Función para actualizar el título y el icono según la vista
+        function updateTitleAndIcon(view) {
+            if (view === 'horario') {
+                mainTitle.textContent = 'Horario';
+                mainTitle.classList.remove('text-size-informacion');
+                mainTitle.classList.add('text-size-horario'); // Tamaño más grande para Horario
+
+                navToggleIcon.classList.remove('fa-arrow-left');
+                navToggleIcon.classList.add('fa-info');
+            } else if (view === 'mapa-info') {
+                mainTitle.textContent = 'INFORMACIÓN';
+                mainTitle.classList.remove('text-size-horario');
+                mainTitle.classList.add('text-size-informacion'); // Tamaño más pequeño para INFORMACIÓN
+
+                navToggleIcon.classList.remove('fa-info');
+                navToggleIcon.classList.add('fa-arrow-left');
+            }
         }
 
         // Función para cambiar entre Horario y Mapa/Información
         function toggleView() {
             if (currentView === 'horario') {
-                // Cambiar a vista de mapa/información
                 horarioContainer.style.display = 'none';
                 mapaContainer.style.display = 'block'; 
-                mainTitle.textContent = 'INFORMACIÓN'; // Cambiar título a INFORMACIÓN
-                navToggleIcon.classList.remove('fa-info'); // Quitar icono 'i'
-                navToggleIcon.classList.add('fa-arrow-left'); // Poner icono de flecha
-                currentView = 'mapa-info'; // Nuevo estado para esta vista
+                currentView = 'mapa-info';
+                updateTitleAndIcon('mapa-info');
             } else {
-                // Cambiar a vista de horario
                 mapaContainer.style.display = 'none';
                 horarioContainer.style.display = 'block'; 
-                mainTitle.textContent = 'Horario'; // Volver a Horario
-                navToggleIcon.classList.remove('fa-arrow-left'); // Quitar icono de flecha
-                navToggleIcon.classList.add('fa-info'); // Poner icono 'i'
                 currentView = 'horario';
+                updateTitleAndIcon('horario');
             }
         }
 
@@ -390,13 +415,12 @@
             toggleView();
         });
 
-        // Nuevo: Listener para el logo - siempre vuelve al horario
+        // Listener para el logo - siempre vuelve al horario
         logoBtn.addEventListener('click', () => {
-            if (currentView !== 'horario') { // Solo si no estamos ya en el horario
-                toggleView(); // Usa la misma función para cambiar de vuelta al horario
+            if (currentView !== 'horario') { 
+                toggleView(); 
             }
         });
-
 
         // Cargar datos al inicio
         cargarDesdeCSV();
