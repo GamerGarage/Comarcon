@@ -120,7 +120,10 @@
                         <div>
                             <h2 class="text-lg font-bold">${act.titulo}</h2>
                             <span class="inline-block mt-1 px-2 py-1 text-xs rounded-full ${getColor(act.tipo)}">${formateaCategoria(act.tipo)}</span>
-                            <div class="detalle-actividad">${act.detalle || 'No hay información adicional.'}</div>
+                            <div class="detalle-actividad">
+                                ${act.detalle || 'No hay información adicional.'}
+                                ${act.enlace ? `<div class="mt-2"><a href="${act.enlace}" target="_blank" class="text-blue-600 underline font-semibold">Apuntarse / Más info</a></div>` : ''}
+                            </div>
                         </div>
                         <div class="flex items-center">
                             <div class="text-sm text-gray-500 ml-4 whitespace-nowrap mr-2">⏱ ${act.duracion}</div>
@@ -257,6 +260,7 @@
                                 tipo: r["tipo"],
                                 duracion: r["duracion"],
                                 detalle: r["detalle"] || "" // Asumiendo que la columna 'detalle' existe en el CSV
+                                enlace: r["enlace"] || ""
                             };
                             const dia = r["dia"]?.toLowerCase();
                             if (dia?.includes("sab")) actividades.sabado.push(actividad);
