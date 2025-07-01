@@ -25,6 +25,12 @@
             text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3); /* Sombra para mejor legibilidad */
         }
 
+        /* Estilos para la imagen del logo */
+        .logo-img {
+            height: 50px; /* Ajusta el tamaño según necesites */
+            width: auto; /* Mantiene la proporción */
+        }
+
         .favorite-btn {
             cursor: pointer;
             font-size: 1.5rem;
@@ -51,35 +57,87 @@
             cursor: pointer;
             background-color: #f3f4f6;
         }
+        /* Estilo para el icono de navegación (mapa/calendario) */
+        .nav-icon {
+            font-size: 2.2rem; /* Tamaño del icono */
+            color: #ecf0f1; /* Color claro para que resalte */
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3); /* Sombra para mejor legibilidad */
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+        .nav-icon:hover {
+            color: #FFD700; /* Color al pasar el ratón */
+        }
+        /* Estilo para el contenedor del mapa */
+        #mapa-container {
+            display: none; /* Inicialmente oculto */
+            background-color: #f9fafb; /* Fondo claro */
+            border-radius: 0.375rem;
+            padding: 1rem;
+            text-align: center;
+            flex-grow: 1; 
+            /* Agregamos overflow para el scroll de la imagen */
+            overflow: auto; 
+            -webkit-overflow-scrolling: touch; /* Suaviza el scroll en iOS */
+        }
+        /* Estilos específicos para la imagen del mapa */
+        #evento-mapa-img {
+            max-width: 100%; /* La imagen no será más ancha que su contenedor */
+            height: auto; /* Mantiene la proporción */
+            display: block; /* Elimina espacio extra bajo la imagen */
+            margin: 0 auto; /* Centrar la imagen si no ocupa el 100% del ancho */
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+
+            /* Clave para permitir el scroll si la imagen es más grande que su contenedor */
+            /* Si la imagen JPG ya es muy grande, esto hará que sea scrollable */
+            /* Si quieres forzar un "zoom inicial" para que el usuario siempre pueda hacer scroll,
+               puedes darle un width o height mayor al 100%, por ejemplo: */
+            /* width: 150%; */ /* Esto haría que la imagen ocupe 150% del ancho del contenedor y sea scrollable */
+        }
     </style>
 </head>
 <body class="text-gray-800">
     <div class="max-w-md mx-auto p-4">
-        <div class="text-center mb-4">
-            <h1 class="text-2xl font-bold">Horario - La Comarcón</h1>
-            <p class="text-sm text-gray-200">Torrevieja · 2025</p>
+        <div class="mb-4">
+            <div class="flex items-center">
+                <img src="estrella-trans.png" alt="Logo La Comarcón" class="logo-img mr-4" /> 
+                <h1 id="main-title" class="text-2xl font-bold mx-auto">Horario</h1> 
+                <a href="#" id="nav-toggle-btn" class="ml-4">
+                    <i class="fas fa-map-marked-alt nav-icon"></i>
+                </a>
+            </div>
+            <p class="text-sm text-gray-200 text-center mt-1">Torrevieja · 2025</p>
         </div>
 
-        <div class="flex justify-center mb-4">
-            <button id="dia1Btn" class="px-4 py-2 bg-blue-500 text-white rounded-l-lg">Sábado</button>
-            <button id="dia2Btn" class="px-4 py-2 bg-blue-100 text-blue-700 rounded-r-lg">Domingo</button>
+        <div id="horario-container">
+            <div class="flex justify-center mb-4">
+                <button id="dia1Btn" class="px-4 py-2 bg-blue-500 text-white rounded-l-lg">Sábado</button>
+                <button id="dia2Btn" class="px-4 py-2 bg-blue-100 text-blue-700 rounded-r-lg">Domingo</button>
+            </div>
+
+            <div class="flex overflow-x-auto mb-4 space-x-2">
+                <button onclick="setFiltro('todas')" class="filtro-btn px-3 py-1 rounded-lg bg-gray-200 text-gray-800">Todas</button>
+                <button onclick="setFiltro('favoritos')" class="filtro-btn px-3 py-1 rounded-lg bg-yellow-200 text-yellow-800">⭐ Favoritos</button>
+                <button onclick="setFiltro('rol_mesa')" class="filtro-btn px-3 py-1 rounded-lg bg-purple-100 text-purple-700">Rol de mesa</button>
+                <button onclick="setFiltro('rol_vivo')" class="filtro-btn px-3 py-1 rounded-lg bg-pink-100 text-pink-700">Rol en vivo</button>
+                <button onclick="setFiltro('videojuegos')" class="filtro-btn px-3 py-1 rounded-lg bg-blue-100 text-blue-700">Videojuegos</button>
+                <button onclick="setFiltro('juegos_mesa')" class="filtro-btn px-3 py-1 rounded-lg bg-indigo-100 text-indigo-700">Juegos de mesa</button>
+                <button onclick="setFiltro('deportes')" class="filtro-btn px-3 py-1 rounded-lg bg-yellow-100 text-yellow-700">Deportes</button>
+                <button onclick="setFiltro('concursos')" class="filtro-btn px-3 py-1 rounded-lg bg-red-100 text-red-700">Concursos</button>
+                <button onclick="setFiltro('talleres')" class="filtro-btn px-3 py-1 rounded-lg bg-green-100 text-green-700">Talleres</button>
+                <button onclick="setFiltro('charlas')" class="filtro-btn px-3 py-1 rounded-lg bg-orange-100 text-orange-700">Charlas</button>
+                <button onclick="setFiltro('otros')" class="filtro-btn px-3 py-1 rounded-lg bg-gray-300 text-gray-800">Otros</button>
+            </div>
+
+            <div id="horario" class="space-y-4"></div>
         </div>
 
-        <div class="flex overflow-x-auto mb-4 space-x-2">
-            <button onclick="setFiltro('todas')" class="filtro-btn px-3 py-1 rounded-lg bg-gray-200 text-gray-800">Todas</button>
-            <button onclick="setFiltro('favoritos')" class="filtro-btn px-3 py-1 rounded-lg bg-yellow-200 text-yellow-800">⭐ Favoritos</button>
-            <button onclick="setFiltro('rol_mesa')" class="filtro-btn px-3 py-1 rounded-lg bg-purple-100 text-purple-700">Rol de mesa</button>
-            <button onclick="setFiltro('rol_vivo')" class="filtro-btn px-3 py-1 rounded-lg bg-pink-100 text-pink-700">Rol en vivo</button>
-            <button onclick="setFiltro('videojuegos')" class="filtro-btn px-3 py-1 rounded-lg bg-blue-100 text-blue-700">Videojuegos</button>
-            <button onclick="setFiltro('juegos_mesa')" class="filtro-btn px-3 py-1 rounded-lg bg-indigo-100 text-indigo-700">Juegos de mesa</button>
-            <button onclick="setFiltro('deportes')" class="filtro-btn px-3 py-1 rounded-lg bg-yellow-100 text-yellow-700">Deportes</button>
-            <button onclick="setFiltro('concursos')" class="filtro-btn px-3 py-1 rounded-lg bg-red-100 text-red-700">Concursos</button>
-            <button onclick="setFiltro('talleres')" class="filtro-btn px-3 py-1 rounded-lg bg-green-100 text-green-700">Talleres</button>
-            <button onclick="setFiltro('charlas')" class="filtro-btn px-3 py-1 rounded-lg bg-orange-100 text-orange-700">Charlas</button>
-            <button onclick="setFiltro('otros')" class="filtro-btn px-3 py-1 rounded-lg bg-gray-300 text-gray-800">Otros</button>
+        <div id="mapa-container">
+            <h2 class="text-xl font-bold mb-4">Mapa del Evento</h2>
+            <img id="evento-mapa-img" src="mapa_recinto.jpg" alt="Mapa del evento">
+            <p class="mt-4 text-sm text-gray-600">Desplázate por la imagen. Para hacer zoom, usa las funciones de zoom de tu navegador (Ctrl/Cmd + Rueda del ratón).</p>
         </div>
-
-        <div id="horario" class="space-y-4"></div>
     </div>
 
     <script>
@@ -87,7 +145,17 @@
         let diaActual = "sabado";
         let filtroActual = "todas";
         let favoritos = new Set(JSON.parse(localStorage.getItem('horarioFavoritos')) || []);
-        let actividadAbierta = null; // Variable para controlar la actividad actualmente abierta
+        let actividadAbierta = null; 
+
+        // Elementos principales de la UI
+        const mainTitle = document.getElementById('main-title');
+        const navToggleButton = document.getElementById('nav-toggle-btn');
+        const navToggleIcon = navToggleButton.querySelector('i');
+        const horarioContainer = document.getElementById('horario-container');
+        const mapaContainer = document.getElementById('mapa-container'); 
+
+        // Estado actual: 'horario' o 'mapa'
+        let currentView = 'horario'; 
 
         const URL_CSV = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQVrAqpQlI4uhoa45UBxoRxsrnUB54QJ_LR5WgScbfFEGwkUannAa-0jRONdjsOwRoJ2hYNbMMAqcw-/pub?output=csv";
 
@@ -108,7 +176,6 @@
             const actividadesPorHora = agruparPorHora(actividades[diaActual]);
             const horas = Object.keys(actividadesPorHora).sort();
 
-            // Resetear la actividad abierta al renderizar un nuevo horario (cambio de día o filtro)
             actividadAbierta = null; 
 
             if (horas.length === 0) {
@@ -122,7 +189,7 @@
                 actividadesPorHora[hora].forEach(act => {
                     const card = document.createElement("div");
                     card.className = "bg-white p-4 mb-2 rounded shadow flex justify-between items-center actividad";
-                    card.dataset.id = act.id; // Añadir un data-id para identificar la tarjeta
+                    card.dataset.id = act.id; 
 
                     const isFavoriteClass = favoritos.has(act.id) ? 'is-favorite' : '';
                     const starIconClass = favoritos.has(act.id) ? 'fas' : 'far';
@@ -144,20 +211,16 @@
                         </div>
                     `;
                     card.addEventListener('click', (e) => {
-                        // Evitar que el clic en el botón de favoritos cierre el detalle
                         if (e.target.closest('.favorite-btn')) return;
 
                         const detalle = card.querySelector('.detalle-actividad');
                         
-                        // Si ya hay una actividad abierta y no es esta, ciérrala
                         if (actividadAbierta && actividadAbierta !== card) {
                             actividadAbierta.querySelector('.detalle-actividad').style.display = 'none';
                         }
 
-                        // Alternar la visibilidad del detalle de la actividad actual
                         detalle.style.display = (detalle.style.display === 'block') ? 'none' : 'block';
                         
-                        // Actualizar la actividad abierta
                         actividadAbierta = (detalle.style.display === 'block') ? card : null;
                     });
                     bloque.appendChild(card);
@@ -261,24 +324,57 @@
                 });
         }
 
+        // Función para cambiar entre Horario y Mapa
+        function toggleView() {
+            if (currentView === 'horario') {
+                // Cambiar a vista de mapa
+                horarioContainer.style.display = 'none';
+                mapaContainer.style.display = 'block'; 
+                mainTitle.textContent = 'MAPA';
+                navToggleIcon.classList.remove('fa-map-marked-alt');
+                navToggleIcon.classList.add('fa-calendar-alt'); // Icono de calendario
+                currentView = 'mapa';
+            } else {
+                // Cambiar a vista de horario
+                mapaContainer.style.display = 'none';
+                horarioContainer.style.display = 'block'; 
+                mainTitle.textContent = 'Horario';
+                navToggleIcon.classList.remove('fa-calendar-alt');
+                navToggleIcon.classList.add('fa-map-marked-alt'); // Icono de mapa
+                currentView = 'horario';
+            }
+        }
+
+        // Event Listeners para los botones de día (si estamos en horario)
         document.getElementById("dia1Btn").addEventListener("click", () => {
-            diaActual = "sabado";
-            document.getElementById("dia1Btn").classList.add("bg-blue-500", "text-white");
-            document.getElementById("dia1Btn").classList.remove("bg-blue-100", "text-blue-700");
-            document.getElementById("dia2Btn").classList.remove("bg-blue-500", "text-white");
-            document.getElementById("dia2Btn").classList.add("bg-blue-100", "text-blue-700");
-            renderHorario();
+            if (currentView === 'horario') { 
+                diaActual = "sabado";
+                document.getElementById("dia1Btn").classList.add("bg-blue-500", "text-white");
+                document.getElementById("dia1Btn").classList.remove("bg-blue-100", "text-blue-700");
+                document.getElementById("dia2Btn").classList.remove("bg-blue-500", "text-white");
+                document.getElementById("dia2Btn").classList.add("bg-blue-100", "text-blue-700");
+                renderHorario();
+            }
         });
 
         document.getElementById("dia2Btn").addEventListener("click", () => {
-            diaActual = "domingo";
-            document.getElementById("dia2Btn").classList.add("bg-blue-500", "text-white");
-            document.getElementById("dia2Btn").classList.remove("bg-blue-100", "text-blue-700");
-            document.getElementById("dia1Btn").classList.remove("bg-blue-500", "text-white");
-            document.getElementById("dia1Btn").classList.add("bg-blue-100", "text-blue-700");
-            renderHorario();
+            if (currentView === 'horario') { 
+                diaActual = "domingo";
+                document.getElementById("dia2Btn").classList.add("bg-blue-500", "text-white");
+                document.getElementById("dia2Btn").classList.remove("bg-blue-100", "text-blue-700");
+                document.getElementById("dia1Btn").classList.remove("bg-blue-500", "text-white");
+                document.getElementById("dia1Btn").classList.add("bg-blue-100", "text-blue-700");
+                renderHorario();
+            }
+        });
+        
+        // Listener para el botón de alternar vista
+        navToggleButton.addEventListener('click', (e) => {
+            e.preventDefault(); 
+            toggleView();
         });
 
+        // Cargar datos al inicio
         cargarDesdeCSV();
     </script>
 </body>
