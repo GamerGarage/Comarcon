@@ -57,16 +57,30 @@
             cursor: pointer;
             background-color: #f3f4f6;
         }
+        /* Estilo para el icono del mapa */
+        .map-icon {
+            font-size: 2.2rem; /* Tamaño del icono */
+            color: #ecf0f1; /* Color claro para que resalte */
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3); /* Sombra para mejor legibilidad */
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+        .map-icon:hover {
+            color: #FFD700; /* Color al pasar el ratón */
+        }
     </style>
 </head>
 <body class="text-gray-800">
     <div class="max-w-md mx-auto p-4">
-        <div class="mb-4">
-            <div class="flex items-center">
+        <div class="mb-4 relative"> <div class="flex items-center">
                 <img src="estrella-trans.png" alt="Logo La Comarcón" class="logo-img mr-4" /> 
                 <h1 class="text-2xl font-bold mx-auto">Horario</h1> 
             </div>
             <p class="text-sm text-gray-200 text-center mt-1">Torrevieja · 2025</p>
+
+            <a href="mapa_evento.pdf" target="_blank" class="absolute top-0 right-0">
+                <i class="fas fa-map-marked-alt map-icon"></i>
+            </a>
         </div>
 
         <div class="flex justify-center mb-4">
