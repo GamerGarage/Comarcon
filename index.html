@@ -74,38 +74,26 @@
             background-color: #f9fafb; /* Fondo claro */
             border-radius: 0.375rem;
             padding: 1rem;
-            /* Eliminamos min-height y flex-direction para que el SVG controle el tamaño */
-            color: #555;
             text-align: center;
-            /* Añadimos un flex-grow para que ocupe el espacio si es necesario, pero el SVG es intrínseco */
             flex-grow: 1; 
-            overflow: hidden; /* Para que el SVG no se desborde si tiene un viewBox grande */
+            /* Agregamos overflow para el scroll de la imagen */
+            overflow: auto; 
+            -webkit-overflow-scrolling: touch; /* Suaviza el scroll en iOS */
         }
-        /* Estilos específicos para el SVG */
-        #evento-mapa-svg {
-            border: 1px solid #ccc;
+        /* Estilos específicos para la imagen del mapa */
+        #evento-mapa-img {
+            max-width: 100%; /* La imagen no será más ancha que su contenedor */
+            height: auto; /* Mantiene la proporción */
+            display: block; /* Elimina espacio extra bajo la imagen */
+            margin: 0 auto; /* Centrar la imagen si no ocupa el 100% del ancho */
             border-radius: 8px;
             box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-            width: 100%; /* El SVG se ajustará al ancho de su contenedor */
-            height: auto; /* Mantiene la proporción */
-            display: block; /* Elimina espacio extra bajo el SVG */
-            max-width: 100%; /* Asegura que no se desborde */
-            margin: 0 auto; /* Centrar el SVG si no ocupa el 100% del ancho disponible */
-        }
-        /* Colores para las zonas */
-        .zona-escenario { fill: #f87171; } /* Rojo */
-        .zona-informacion { fill: #60a5fa; } /* Azul */
-        .zona-artistas { fill: #a78bfa; } /* Morado */
-        .zona-talleres { fill: #4ade80; } /* Verde */
-        
-        /* Estilos para el texto dentro del SVG */
-        .zona-texto {
-            font-family: sans-serif;
-            font-size: 20px;
-            font-weight: bold;
-            fill: #ffffff; /* Texto blanco para que contraste */
-            text-anchor: middle; /* Centrar el texto horizontalmente */
-            pointer-events: none; /* Asegura que el texto no interfiera con el click en la forma */
+
+            /* Clave para permitir el scroll si la imagen es más grande que su contenedor */
+            /* Si la imagen JPG ya es muy grande, esto hará que sea scrollable */
+            /* Si quieres forzar un "zoom inicial" para que el usuario siempre pueda hacer scroll,
+               puedes darle un width o height mayor al 100%, por ejemplo: */
+            /* width: 150%; */ /* Esto haría que la imagen ocupe 150% del ancho del contenedor y sea scrollable */
         }
     </style>
 </head>
@@ -147,57 +135,8 @@
 
         <div id="mapa-container">
             <h2 class="text-xl font-bold mb-4">Mapa del Evento</h2>
-            <svg id="evento-mapa-svg" viewBox="0 0 800 600" preserveAspectRatio="xMidYMid meet">
-                <style>
-                    /* Estilos para las formas y texto dentro del SVG */
-                    rect {
-                        stroke: #333;
-                        stroke-width: 3;
-                        transition: fill 0.3s ease; /* Transición suave al pasar el ratón */
-                    }
-                    rect:hover {
-                        fill-opacity: 0.8;
-                        cursor: pointer;
-                    }
-                    text {
-                        font-family: Arial, sans-serif;
-                        font-size: 28px;
-                        font-weight: bold;
-                        fill: #ffffff;
-                        text-anchor: middle;
-                        pointer-events: none; /* Asegura que el texto no bloquee el clic en la forma */
-                    }
-                    /* Colores de las zonas */
-                    .zona-escenario { fill: #f87171; } /* Tailwind Red-400 */
-                    .zona-informacion { fill: #60a5fa; } /* Tailwind Blue-400 */
-                    .zona-artistas { fill: #a78bfa; } /* Tailwind Purple-400 */
-                    .zona-talleres { fill: #4ade80; } /* Tailwind Green-400 */
-                </style>
-
-                <rect x="0" y="0" width="800" height="600" fill="#f0f0f0"/> 
-
-                <rect x="50" y="50" width="300" height="150" class="zona-escenario" id="zonaEscenario" />
-                <text x="200" y="130">ESCENARIO</text>
-
-                <rect x="50" y="250" width="300" height="150" class="zona-informacion" id="zonaInformacion" />
-                <text x="200" y="330">INFORMACIÓN</text>
-
-                <rect x="450" y="50" width="300" height="150" class="zona-artistas" id="zonaArtistas" />
-                <text x="600" y="130">ARTISTAS</text>
-
-                <rect x="450" y="250" width="300" height="150" class="zona-talleres" id="zonaTalleres" />
-                <text x="600" y="330">TALLERES</text>
-
-                <line x1="350" y1="125" x2="450" y2="125" stroke="#666" stroke-width="5" stroke-linecap="round"/>
-                <line x1="350" y1="325" x2="450" y2="325" stroke="#666" stroke-width="5" stroke-linecap="round"/>
-                <line x1="200" y1="200" x2="200" y2="250" stroke="#666" stroke-width="5" stroke-linecap="round"/>
-                <line x1="600" y1="200" x2="600" y2="250" stroke="#666" stroke-width="5" stroke-linecap="round"/>
-
-                <circle cx="400" cy="500" r="30" fill="#ffcc00" stroke="#333" stroke-width="2" />
-                <text x="400" y="508" font-size="24" fill="#333">ENTRADA</text>
-
-            </svg>
-            
+            <img id="evento-mapa-img" src="mapa_recinto.jpg" alt="Mapa del evento">
+            <p class="mt-4 text-sm text-gray-600">Desplázate por la imagen. Para hacer zoom, usa las funciones de zoom de tu navegador (Ctrl/Cmd + Rueda del ratón).</p>
         </div>
     </div>
 
@@ -213,7 +152,7 @@
         const navToggleButton = document.getElementById('nav-toggle-btn');
         const navToggleIcon = navToggleButton.querySelector('i');
         const horarioContainer = document.getElementById('horario-container');
-        const mapaContainer = document.getElementById('mapa-container'); // Referencia al nuevo contenedor del mapa
+        const mapaContainer = document.getElementById('mapa-container'); 
 
         // Estado actual: 'horario' o 'mapa'
         let currentView = 'horario'; 
@@ -390,7 +329,7 @@
             if (currentView === 'horario') {
                 // Cambiar a vista de mapa
                 horarioContainer.style.display = 'none';
-                mapaContainer.style.display = 'block'; // Cambiado a 'block' para el SVG
+                mapaContainer.style.display = 'block'; 
                 mainTitle.textContent = 'MAPA';
                 navToggleIcon.classList.remove('fa-map-marked-alt');
                 navToggleIcon.classList.add('fa-calendar-alt'); // Icono de calendario
@@ -408,7 +347,7 @@
 
         // Event Listeners para los botones de día (si estamos en horario)
         document.getElementById("dia1Btn").addEventListener("click", () => {
-            if (currentView === 'horario') { // Solo si estamos en la vista de horario
+            if (currentView === 'horario') { 
                 diaActual = "sabado";
                 document.getElementById("dia1Btn").classList.add("bg-blue-500", "text-white");
                 document.getElementById("dia1Btn").classList.remove("bg-blue-100", "text-blue-700");
@@ -419,7 +358,7 @@
         });
 
         document.getElementById("dia2Btn").addEventListener("click", () => {
-            if (currentView === 'horario') { // Solo si estamos en la vista de horario
+            if (currentView === 'horario') { 
                 diaActual = "domingo";
                 document.getElementById("dia2Btn").classList.add("bg-blue-500", "text-white");
                 document.getElementById("dia2Btn").classList.remove("bg-blue-100", "text-blue-700");
@@ -431,7 +370,7 @@
         
         // Listener para el botón de alternar vista
         navToggleButton.addEventListener('click', (e) => {
-            e.preventDefault(); // Prevenir el comportamiento por defecto del enlace
+            e.preventDefault(); 
             toggleView();
         });
 
