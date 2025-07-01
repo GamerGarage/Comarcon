@@ -48,7 +48,17 @@
         </div>
 
         <div class="flex overflow-x-auto mb-4 space-x-2">
-            <!-- Botones de filtros omitidos por brevedad -->
+            <button onclick="setFiltro('todas')" class="filtro-btn px-3 py-1 rounded-full bg-gray-200 text-gray-800">Todas</button>
+            <button onclick="setFiltro('favoritos')" class="filtro-btn px-3 py-1 rounded-full bg-yellow-200 text-yellow-800">⭐ Favoritos</button>
+            <button onclick="setFiltro('rol_mesa')" class="filtro-btn px-3 py-1 rounded-full bg-purple-100 text-purple-700">Rol de mesa</button>
+            <button onclick="setFiltro('rol_vivo')" class="filtro-btn px-3 py-1 rounded-full bg-pink-100 text-pink-700">Rol en vivo</button>
+            <button onclick="setFiltro('videojuegos')" class="filtro-btn px-3 py-1 rounded-full bg-blue-100 text-blue-700">Videojuegos</button>
+            <button onclick="setFiltro('juegos_mesa')" class="filtro-btn px-3 py-1 rounded-full bg-indigo-100 text-indigo-700">Juegos de mesa</button>
+            <button onclick="setFiltro('deportes')" class="filtro-btn px-3 py-1 rounded-full bg-yellow-100 text-yellow-700">Deportes</button>
+            <button onclick="setFiltro('concursos')" class="filtro-btn px-3 py-1 rounded-full bg-red-100 text-red-700">Concursos</button>
+            <button onclick="setFiltro('talleres')" class="filtro-btn px-3 py-1 rounded-full bg-green-100 text-green-700">Talleres</button>
+            <button onclick="setFiltro('charlas')" class="filtro-btn px-3 py-1 rounded-full bg-orange-100 text-orange-700">Charlas</button>
+            <button onclick="setFiltro('otros')" class="filtro-btn px-3 py-1 rounded-full bg-gray-300 text-gray-800">Otros</button>
         </div>
 
         <div id="horario" class="space-y-4"></div>
@@ -168,6 +178,17 @@
             if (filtroActual === "favoritos") renderHorario();
         }
 
+        function setFiltro(filtro) {
+            filtroActual = filtro;
+            document.querySelectorAll(".filtro-btn").forEach(btn => {
+                btn.classList.remove("ring", "ring-offset-2", "ring-blue-500");
+            });
+            const btnActivo = Array.from(document.querySelectorAll(".filtro-btn"))
+                .find(btn => btn.textContent.toLowerCase().includes(formateaCategoria(filtro).toLowerCase()));
+            if (btnActivo) btnActivo.classList.add("ring", "ring-offset-2", "ring-blue-500");
+            renderHorario();
+        }
+
         function parseCSV(text) {
             const lines = text.trim().split("\n");
             const headers = lines[0].split(",").map(h => h.trim());
@@ -188,15 +209,15 @@
                     registros.forEach(r => {
                         if (r["id"] && r["hora"] && r["titulo"] && r["tipo"] && r["duracion"] && r["dia"]) {
                             const actividad = {
-                                id: r["id"],
-                                hora: r["hora"]?.trim(),
-                                titulo: r["titulo"]?.trim(),
-                                tipo: r["tipo"]?.trim(),
-                                duracion: r["duracion"]?.trim(),
+                                id: r["id"].trim(),
+                                hora: r["hora"].trim(),
+                                titulo: r["titulo"].trim(),
+                                tipo: r["tipo"].toLowerCase().trim(),
+                                duracion: r["duracion"].trim(),
                                 detalle: r["detalle"]?.trim() || "",
                                 enlace: r["enlace"]?.trim() || ""
                             };
-                            const dia = r["dia"]?.toLowerCase();
+                            const dia = r["dia"].toLowerCase();
                             if (dia.includes("sab")) actividades.sabado.push(actividad);
                             else if (dia.includes("dom")) actividades.domingo.push(actividad);
                         }
@@ -207,10 +228,19 @@
 
         document.getElementById("dia1Btn").addEventListener("click", () => {
             diaActual = "sabado";
+            document.getElementById("dia1Btn").classList.add("bg-blue-500", "text-white");
+            document.getElementById("dia1Btn").classList.remove("bg-blue-100", "text-blue-700");
+            document.getElementById("dia2Btn").classList.remove("bg-blue-500", "text-white");
+            document.getElementById("dia2Btn").classList.add("bg-blue-100", "text-blue-700");
             renderHorario();
         });
+
         document.getElementById("dia2Btn").addEventListener("click", () => {
             diaActual = "domingo";
+            document.getElementById("dia2Btn").classList.add("bg-blue-500", "text-white");
+            document.getElementById("dia2Btn").classList.remove("bg-blue-100", "text-blue-700");
+            document.getElementById("dia1Btn").classList.remove("bg-blue-500", "text-white");
+            document.getElementById("dia1Btn").classList.add("bg-blue-100", "text-blue-700");
             renderHorario();
         });
 
@@ -218,4 +248,5 @@
     </script>
 </body>
 </html>
+
 
