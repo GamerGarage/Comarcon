@@ -4,6 +4,8 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     
+    <link rel="icon" type="image/png" href="estrella-trans.png"/> 
+
     <script src="https://cdn.tailwindcss.com"></script>
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -11,7 +13,9 @@
     <link href="https://fonts.googleapis.com/css2?family=Permanent+Marker&display=swap" rel="stylesheet">
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    
     <title>Horario - La Comarcón</title>
+
     <style>
         /* Aplicar el color de fondo a todo el body */
         body {
@@ -23,8 +27,11 @@
             font-family: 'Permanent Marker', cursive;
             color: #ecf0f1; /* Un color claro para que resalte sobre el morado */
             text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3); /* Sombra para mejor legibilidad */
-            /* Transición para el tamaño de la fuente para un cambio suave */
-            transition: font-size 0.3s ease-in-out;
+            transition: font-size 0.3s ease-in-out; /* Transición para el cambio de tamaño de fuente */
+            text-align: center; /* Centrar el texto dentro del h1 */
+            width: 100%; /* El h1 ocupará todo el ancho de su contenedor */
+            /* Ajuste de margen superior e inferior para el h1 si es necesario, 
+               pero mx-auto y text-align: center en el h1 son clave para el centrado global */
         }
 
         /* Estilos para la imagen del logo */
@@ -32,8 +39,29 @@
             height: 50px; /* Ajusta el tamaño según necesites */
             width: auto; /* Mantiene la proporción */
             cursor: pointer; /* Indica que es clicable */
+            position: absolute; /* Posicionamiento absoluto para que el h1 pueda centrarse */
+            left: 1rem; /* Margen izquierdo de 1rem (p-4 del contenedor principal) */
+            top: 1rem; /* Alinea con el padding superior del contenedor */
         }
 
+        /* Estilo para el contenedor del icono de navegación */
+        .nav-icon-container { 
+            position: absolute; /* Posicionamiento absoluto */
+            right: 1rem; /* Margen derecho de 1rem (p-4 del contenedor principal) */
+            top: 1rem; /* Alinea con el padding superior del contenedor */
+        }
+        .nav-icon {
+            font-size: 2.2rem; /* Tamaño del icono */
+            color: #ecf0f1; /* Color claro para que resalte */
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3); /* Sombra para mejor legibilidad */
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+        .nav-icon:hover {
+            color: #FFD700; /* Color al pasar el ratón */
+        }
+
+        /* Estilos para el botón de favoritos */
         .favorite-btn {
             cursor: pointer;
             font-size: 1.5rem;
@@ -44,8 +72,10 @@
             justify-content: center;
         }
         .favorite-btn.is-favorite {
-            color: #FFD700;
+            color: #FFD700; /* Amarillo dorado para favoritos */
         }
+
+        /* Estilos para el detalle de la actividad que se expande */
         .detalle-actividad {
             display: none;
             margin-top: 0.5rem;
@@ -58,20 +88,10 @@
         }
         .actividad:hover {
             cursor: pointer;
-            background-color: #f3f4f6;
+            background-color: #f3f4f6; /* Cambio de color al pasar el ratón */
         }
-        /* Estilo para el icono de navegación (mapa/calendario) */
-        .nav-icon {
-            font-size: 2.2rem; /* Tamaño del icono */
-            color: #ecf0f1; /* Color claro para que resalte */
-            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3); /* Sombra para mejor legibilidad */
-            cursor: pointer;
-            transition: color 0.2s;
-        }
-        .nav-icon:hover {
-            color: #FFD700; /* Color al pasar el ratón */
-        }
-        /* Estilo para el contenedor del mapa */
+
+        /* Estilo para el contenedor del mapa y la información */
         #mapa-container {
             display: none; /* Inicialmente oculto */
             background-color: #f9fafb; /* Fondo claro */
@@ -95,31 +115,38 @@
         /* Estilo para los títulos H2 dentro del mapa-container */
         #mapa-container h2 {
             color: #4a4a4a; /* Un color oscuro para el texto principal */
+            margin-top: 1.5rem; /* Espacio superior para separar secciones */
             margin-bottom: 0.75rem; /* Espacio debajo del título */
             font-size: 1.5rem; /* Tamaño de fuente ligeramente más grande */
             border-bottom: 2px solid #eee; /* Línea separadora */
             padding-bottom: 0.5rem; /* Espacio entre el texto y la línea */
         }
+        /* Ajuste para el primer H2 de la sección de mapa */
+        #mapa-container h2:first-of-type {
+            margin-top: 0; 
+        }
 
-        /* Clases de Tailwind para el tamaño del h1 (las añadimos en el JS) */
+
+        /* Clases de Tailwind para el tamaño del h1 (aplicadas con JS) */
         .text-size-horario {
-            font-size: 2.5rem; /* O cualquier tamaño que te guste para "Horario" */
+            font-size: 2.8rem; /* Tamaño más grande para "Horario" */
         }
         .text-size-informacion {
-            font-size: 2.2rem; /* Un poco más pequeña para "INFORMACIÓN" */
+            font-size: 2.2rem; /* Tamaño ligeramente más pequeño para "INFORMACIÓN" */
         }
     </style>
 </head>
 <body class="text-gray-800">
-    <div class="max-w-md mx-auto p-4">
+    <div class="max-w-md mx-auto p-4 relative"> 
         <div class="mb-4">
-            <div class="flex items-center justify-between"> <img src="estrella-trans.png" alt="Logo La Comarcón" class="logo-img mr-4" id="logo-btn" /> 
-                <h1 id="main-title" class="text-2xl font-bold mx-auto">Horario</h1> 
-                
-                <a href="#" id="nav-toggle-btn" class="ml-4 mr-4"> 
-                    <i class="fas fa-info nav-icon"></i> 
-                </a>
-            </div>
+            <img src="estrella-trans.png" alt="Logo La Comarcón" class="logo-img" id="logo-btn" /> 
+            
+            <a href="#" id="nav-toggle-btn" class="nav-icon-container"> 
+                <i class="fas fa-info nav-icon"></i> 
+            </a>
+
+            <h1 id="main-title" class="text-2xl font-bold">Horario</h1> 
+            
             <p class="text-sm text-gray-200 text-center mt-1">Torrevieja · 2025</p>
         </div>
 
@@ -183,7 +210,8 @@
         // Estado actual: 'horario' o 'mapa'
         let currentView = 'horario'; 
 
-        const URL_CSV = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQVrAqpQlI4uhoa45UBxoRxsrnUB54QJ_LR5WgScbfFEGwkUannAa-0jRONdjsOwRoJ2hYNbMMAqcw-/pub?output=csv";
+        // URL de tu Google Sheet exportado como CSV
+        const URL_CSV = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQVrAqpQlI4uhoa45UBxoRxsrnUB54QJ_LR5WgScbfFEGwkUannAa-0jRONdjsOwRoR2hYNbMMAqcw-/pub?output=csv";
 
         function agruparPorHora(lista) {
             const mapa = {};
@@ -202,7 +230,7 @@
             const actividadesPorHora = agruparPorHora(actividades[diaActual]);
             const horas = Object.keys(actividadesPorHora).sort();
 
-            actividadAbierta = null; 
+            actividadAbierta = null; // Reinicia la actividad abierta al renderizar
 
             if (horas.length === 0) {
                 contenedor.innerHTML = "<p class='text-center text-gray-300'>No hay actividades para esta selección.</p>";
@@ -237,16 +265,20 @@
                         </div>
                     `;
                     card.addEventListener('click', (e) => {
+                        // Evita que el clic en la estrella también abra/cierre el detalle
                         if (e.target.closest('.favorite-btn')) return;
 
                         const detalle = card.querySelector('.detalle-actividad');
                         
+                        // Cierra la actividad previamente abierta si es diferente
                         if (actividadAbierta && actividadAbierta !== card) {
                             actividadAbierta.querySelector('.detalle-actividad').style.display = 'none';
                         }
 
+                        // Alterna la visibilidad del detalle de la actividad actual
                         detalle.style.display = (detalle.style.display === 'block') ? 'none' : 'block';
                         
+                        // Actualiza la referencia a la actividad abierta
                         actividadAbierta = (detalle.style.display === 'block') ? card : null;
                     });
                     bloque.appendChild(card);
@@ -254,20 +286,23 @@
                 contenedor.appendChild(bloque);
             });
 
+            // Re-adjuntar listeners a los botones de favoritos (necesario porque se re-renderiza todo)
             document.querySelectorAll('.favorite-btn').forEach(button => {
                 button.addEventListener('click', toggleFavorite);
             });
         }
 
+        // Función para formatear las categorías (ej. 'rol_mesa' a 'Rol de mesa')
         function formateaCategoria(tipo) {
             const mapa = {
                 rol_mesa: "Rol de mesa", rol_vivo: "Rol en vivo", videojuegos: "Videojuegos",
                 juegos_mesa: "Juegos de mesa", deportes: "Deportes", concursos: "Concursos",
                 talleres: "Talleres", charlas: "Charlas", otros: "Otros", favoritos: "Favoritos"
             };
-            return mapa[tipo] || tipo;
+            return mapa[tipo] || tipo; // Devuelve el formato si existe, o el tipo original
         }
 
+        // Función para obtener las clases de color de Tailwind según el tipo de actividad
         function getColor(tipo) {
             switch (tipo) {
                 case "rol_mesa": return "bg-purple-100 text-purple-700";
@@ -283,36 +318,45 @@
             }
         }
 
+        // Función para alternar el estado de favorito de una actividad
         function toggleFavorite(event) {
             const button = event.currentTarget;
             const icon = button.querySelector('i');
-            const id = button.dataset.id;
+            const id = button.dataset.id; // Obtiene el ID de la actividad del dataset del botón
+
             if (favoritos.has(id)) {
                 favoritos.delete(id);
                 button.classList.remove('is-favorite');
                 icon.classList.remove('fas');
-                icon.classList.add('far');
+                icon.classList.add('far'); // Estrella vacía
             } else {
                 favoritos.add(id);
                 button.classList.add('is-favorite');
                 icon.classList.remove('far');
-                icon.classList.add('fas');
+                icon.classList.add('fas'); // Estrella llena
             }
+            // Guarda los favoritos en localStorage
             localStorage.setItem('horarioFavoritos', JSON.stringify(Array.from(favoritos)));
+
+            // Si el filtro actual es 'favoritos', re-renderiza para que la actividad desaparezca si se desmarca
             if (filtroActual === "favoritos") renderHorario();
         }
 
+        // Función para establecer el filtro de actividades
         function setFiltro(filtro) {
             filtroActual = filtro;
+            // Elimina el anillo de todos los botones de filtro
             document.querySelectorAll(".filtro-btn").forEach(btn => {
                 btn.classList.remove("ring", "ring-offset-2", "ring-blue-500");
             });
+            // Añade el anillo al botón de filtro activo
             const btnActivo = Array.from(document.querySelectorAll(".filtro-btn"))
                 .find(btn => btn.textContent.toLowerCase().includes(formateaCategoria(filtro).toLowerCase()));
             if (btnActivo) btnActivo.classList.add("ring", "ring-offset-2", "ring-blue-500");
             renderHorario();
         }
 
+        // Función para parsear el CSV
         function parseCSV(text) {
             const lines = text.trim().split("\n");
             const headers = lines[0].split(",").map(h => h.trim());
@@ -324,13 +368,15 @@
             });
         }
 
+        // Función para cargar datos desde el CSV
         function cargarDesdeCSV() {
             fetch(URL_CSV)
                 .then(resp => resp.text())
                 .then(data => {
                     const registros = parseCSV(data);
-                    actividades = { sabado: [], domingo: [] };
+                    actividades = { sabado: [], domingo: [] }; // Reinicia las actividades
                     registros.forEach(r => {
+                        // Asegura que los campos básicos existan
                         if (r["id"] && r["hora"] && r["titulo"] && r["tipo"] && r["duracion"] && r["dia"]) {
                             const actividad = {
                                 id: r["id"].trim(),
@@ -338,7 +384,7 @@
                                 titulo: r["titulo"].trim(),
                                 tipo: r["tipo"].toLowerCase().trim(),
                                 duracion: r["duracion"].trim(),
-                                detalle: r["detalle"]?.trim() || "",
+                                detalle: r["detalle"]?.trim() || "", // Uso de optional chaining para detalle y enlace
                                 enlace: r["enlace"]?.trim() || ""
                             };
                             const dia = r["dia"].toLowerCase();
@@ -346,47 +392,46 @@
                             else if (dia.includes("dom")) actividades.domingo.push(actividad);
                         }
                     });
-                    // Al cargar, aseguramos que el título inicial sea el correcto
-                    updateTitleAndIcon('horario'); 
-                    renderHorario();
-                });
+                    renderHorario(); // Renderiza el horario una vez cargados los datos
+                })
+                .catch(error => console.error("Error al cargar el CSV:", error));
         }
 
-        // Función para actualizar el título y el icono según la vista
+        // Función para actualizar el título principal y el icono de navegación
         function updateTitleAndIcon(view) {
             if (view === 'horario') {
                 mainTitle.textContent = 'Horario';
                 mainTitle.classList.remove('text-size-informacion');
-                mainTitle.classList.add('text-size-horario'); // Tamaño más grande para Horario
+                mainTitle.classList.add('text-size-horario'); // Aplica tamaño más grande para Horario
 
-                navToggleIcon.classList.remove('fa-arrow-left');
-                navToggleIcon.classList.add('fa-info');
+                navToggleIcon.classList.remove('fa-arrow-left'); // Quita la flecha
+                navToggleIcon.classList.add('fa-info'); // Pone el icono 'i'
             } else if (view === 'mapa-info') {
                 mainTitle.textContent = 'INFORMACIÓN';
                 mainTitle.classList.remove('text-size-horario');
-                mainTitle.classList.add('text-size-informacion'); // Tamaño más pequeño para INFORMACIÓN
+                mainTitle.classList.add('text-size-informacion'); // Aplica tamaño más pequeño para INFORMACIÓN
 
-                navToggleIcon.classList.remove('fa-info');
-                navToggleIcon.classList.add('fa-arrow-left');
+                navToggleIcon.classList.remove('fa-info'); // Quita el icono 'i'
+                navToggleIcon.classList.add('fa-arrow-left'); // Pone la flecha
             }
         }
 
-        // Función para cambiar entre Horario y Mapa/Información
+        // Función para alternar entre la vista de Horario y la vista de Mapa/Información
         function toggleView() {
             if (currentView === 'horario') {
-                horarioContainer.style.display = 'none';
-                mapaContainer.style.display = 'block'; 
+                horarioContainer.style.display = 'none'; // Oculta el horario
+                mapaContainer.style.display = 'block'; // Muestra el mapa/info
                 currentView = 'mapa-info';
-                updateTitleAndIcon('mapa-info');
+                updateTitleAndIcon('mapa-info'); // Actualiza el título y el icono
             } else {
-                mapaContainer.style.display = 'none';
-                horarioContainer.style.display = 'block'; 
+                mapaContainer.style.display = 'none'; // Oculta el mapa/info
+                horarioContainer.style.display = 'block'; // Muestra el horario
                 currentView = 'horario';
-                updateTitleAndIcon('horario');
+                updateTitleAndIcon('horario'); // Actualiza el título y el icono
             }
         }
 
-        // Event Listeners para los botones de día (solo si estamos en horario)
+        // Event Listeners para los botones de día (Solo funcionan si estamos en la vista de horario)
         document.getElementById("dia1Btn").addEventListener("click", () => {
             if (currentView === 'horario') { 
                 diaActual = "sabado";
@@ -409,21 +454,22 @@
             }
         });
         
-        // Listener para el botón de alternar vista
+        // Listener para el botón de alternar vista (el icono 'i' o flecha)
         navToggleButton.addEventListener('click', (e) => {
-            e.preventDefault(); 
+            e.preventDefault(); // Evita el comportamiento predeterminado del enlace
             toggleView();
         });
 
-        // Listener para el logo - siempre vuelve al horario
+        // Listener para el logo: siempre regresa a la vista de Horario
         logoBtn.addEventListener('click', () => {
             if (currentView !== 'horario') { 
-                toggleView(); 
+                toggleView(); // Si no estamos en el horario, cambiamos a él
             }
         });
 
-        // Cargar datos al inicio
+        // Cargar datos al inicio y establecer el estado inicial del título e icono
         cargarDesdeCSV();
+        updateTitleAndIcon('horario'); // Asegura que el título y el icono estén correctos al cargar
     </script>
 </body>
 </html>
