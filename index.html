@@ -87,6 +87,7 @@
         let diaActual = "sabado";
         let filtroActual = "todas";
         let favoritos = new Set(JSON.parse(localStorage.getItem('horarioFavoritos')) || []);
+        let actividadAbierta = null; // Variable para controlar la actividad actualmente abierta
 
         const URL_CSV = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQVrAqpQlI4uhoa45UBxoRxsrnUB54QJ_LR5WgScbfFEGwkUannAa-0jRONdjsOwRoJ2hYNbMMAqcw-/pub?output=csv";
 
@@ -107,6 +108,9 @@
             const actividadesPorHora = agruparPorHora(actividades[diaActual]);
             const horas = Object.keys(actividadesPorHora).sort();
 
+            // Resetear la actividad abierta al renderizar un nuevo horario (cambio de día o filtro)
+            actividadAbierta = null; 
+
             if (horas.length === 0) {
                 contenedor.innerHTML = "<p class='text-center text-gray-300'>No hay actividades para esta selección.</p>";
                 return;
@@ -118,6 +122,7 @@
                 actividadesPorHora[hora].forEach(act => {
                     const card = document.createElement("div");
                     card.className = "bg-white p-4 mb-2 rounded shadow flex justify-between items-center actividad";
+                    card.dataset.id = act.id; // Añadir un data-id para identificar la tarjeta
 
                     const isFavoriteClass = favoritos.has(act.id) ? 'is-favorite' : '';
                     const starIconClass = favoritos.has(act.id) ? 'fas' : 'far';
@@ -139,9 +144,21 @@
                         </div>
                     `;
                     card.addEventListener('click', (e) => {
+                        // Evitar que el clic en el botón de favoritos cierre el detalle
                         if (e.target.closest('.favorite-btn')) return;
+
                         const detalle = card.querySelector('.detalle-actividad');
+                        
+                        // Si ya hay una actividad abierta y no es esta, ciérrala
+                        if (actividadAbierta && actividadAbierta !== card) {
+                            actividadAbierta.querySelector('.detalle-actividad').style.display = 'none';
+                        }
+
+                        // Alternar la visibilidad del detalle de la actividad actual
                         detalle.style.display = (detalle.style.display === 'block') ? 'none' : 'block';
+                        
+                        // Actualizar la actividad abierta
+                        actividadAbierta = (detalle.style.display === 'block') ? card : null;
                     });
                     bloque.appendChild(card);
                 });
