@@ -23,6 +23,17 @@
             font-family: 'Permanent Marker', cursive;
             color: #ecf0f1; /* Un color claro para que resalte sobre el morado */
             text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3); /* Sombra para mejor legibilidad */
+            /* Para alinear con la imagen, si es necesario */
+            display: inline-block; /* Permite que el margen superior ajuste bien */
+            vertical-align: middle; /* Alinea verticalmente con la imagen */
+            margin-left: 0.5rem; /* Pequeño espacio entre la imagen y el título */
+        }
+
+        /* Estilos para la imagen del logo */
+        .logo-img {
+            height: 50px; /* Ajusta el tamaño según necesites */
+            width: auto; /* Mantiene la proporción */
+            vertical-align: middle; /* Alinea verticalmente con el título */
         }
 
         .favorite-btn {
@@ -56,7 +67,10 @@
 <body class="text-gray-800">
     <div class="max-w-md mx-auto p-4">
         <div class="text-center mb-4">
-            <h1 class="text-2xl font-bold">Horario - La Comarcón</h1>
+            <div class="flex items-center justify-center">
+                <img src="estrella-trans.png" alt="Logo La Comarcón" class="logo-img" />
+                <h1 class="text-2xl font-bold">Horario - La Comarcón</h1>
+            </div>
             <p class="text-sm text-gray-200">Torrevieja · 2025</p>
         </div>
 
@@ -87,7 +101,7 @@
         let diaActual = "sabado";
         let filtroActual = "todas";
         let favoritos = new Set(JSON.parse(localStorage.getItem('horarioFavoritos')) || []);
-        let actividadAbierta = null; // Variable para controlar la actividad actualmente abierta
+        let actividadAbierta = null; 
 
         const URL_CSV = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQVrAqpQlI4uhoa45UBxoRxsrnUB54QJ_LR5WgScbfFEGwkUannAa-0jRONdjsOwRoJ2hYNbMMAqcw-/pub?output=csv";
 
@@ -108,7 +122,6 @@
             const actividadesPorHora = agruparPorHora(actividades[diaActual]);
             const horas = Object.keys(actividadesPorHora).sort();
 
-            // Resetear la actividad abierta al renderizar un nuevo horario (cambio de día o filtro)
             actividadAbierta = null; 
 
             if (horas.length === 0) {
@@ -122,7 +135,7 @@
                 actividadesPorHora[hora].forEach(act => {
                     const card = document.createElement("div");
                     card.className = "bg-white p-4 mb-2 rounded shadow flex justify-between items-center actividad";
-                    card.dataset.id = act.id; // Añadir un data-id para identificar la tarjeta
+                    card.dataset.id = act.id; 
 
                     const isFavoriteClass = favoritos.has(act.id) ? 'is-favorite' : '';
                     const starIconClass = favoritos.has(act.id) ? 'fas' : 'far';
@@ -144,20 +157,16 @@
                         </div>
                     `;
                     card.addEventListener('click', (e) => {
-                        // Evitar que el clic en el botón de favoritos cierre el detalle
                         if (e.target.closest('.favorite-btn')) return;
 
                         const detalle = card.querySelector('.detalle-actividad');
                         
-                        // Si ya hay una actividad abierta y no es esta, ciérrala
                         if (actividadAbierta && actividadAbierta !== card) {
                             actividadAbierta.querySelector('.detalle-actividad').style.display = 'none';
                         }
 
-                        // Alternar la visibilidad del detalle de la actividad actual
                         detalle.style.display = (detalle.style.display === 'block') ? 'none' : 'block';
                         
-                        // Actualizar la actividad abierta
                         actividadAbierta = (detalle.style.display === 'block') ? card : null;
                     });
                     bloque.appendChild(card);
