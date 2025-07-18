@@ -7,13 +7,13 @@
   "event_year": 2025,
   "event_month_0_indexed": 6,  // Julio es el mes 6 (0-indexado: Enero=0, Febrero=1, etc.)
   "event_day_saturday": 12,    // Día del sábado del evento (ej. 12 para 12 de Julio)
-  "event_day_sunday": 13,      // Día del domingo del evento (ej. 13 para 13 de Julio)
-  "map_image_url": "https://gamergarage.github.io/Comarcon/mapa_recinto.png", // <<-- ¡REEMPLAZA CON TU URL REAL DEL MAPA!
+  "event_day_sunday": 13,      // Día del domingo del evento (ej. 13 para 13 de Julio)  
   "notification_preamble": "¡Recordatorio de Comarcon! ",
   "alarm_offset_minutes": 15,
 
   "info_section": {
     "welcome_text": "¡Bienvenido a Comarcon 2025! Prepárate para dos días llenos de diversión, juegos y competición en el corazón de Torrevieja. Explora el horario, marca tus actividades favoritas y recibe notificaciones para no perderte nada.",
+    "map_image_url": "https://gamergarage.github.io/Comarcon/mapa_recinto.png", // <<-- ¡REEMPLAZA CON TU URL REAL DEL MAPA!
     "contact_email": "contacto@comarcon.es",
     "social_media_facebook": "https://facebook.com/comarconoficial",
     "social_media_instagram": "https://instagram.com/comarconoficial",
