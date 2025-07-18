@@ -1,18 +1,18 @@
-id,dia,hora,titulo,tipo,duracion
-act001,sabado,10:00,Torneo de Smash,videojuegos,1h
-act002,sabado,10:00,Juegos de mesa para peques,juegos_mesa,1h
-act003,sabado,11:00,Charla sobre narrativa en rol,charlas,1h
-act004,sabado,12:30,Taller de Pintura Miniaturas,talleres,1h
-act005,sabado,14:00,Rol de mesa: D&D,rol_mesa,2h
-act006,sabado,16:00,Rol en vivo: misterio medieval,rol_vivo,2h
-act007,sabado,17:30,Juegos de mesa para familias,juegos_mesa,1h
-act008,sabado,18:30,Tiro con arco,deportes,Todo el día
-act009,sabado,20:00,Concurso de cosplay,concursos,1h
-act010,domingo,10:00,Torneo de Mario Kart,videojuegos,1h
-act011,domingo,11:00,Charla sobre anime y cultura pop,charlas,1h
-act012,domingo,12:00,Taller de dibujo manga,talleres,1h
-act013,domingo,13:30,Rol de mesa: La llamada de Cthulhu,rol_mesa,2h
-act014,domingo,15:00,Concurso de trivial friki,concursos,1h
-act015,domingo,16:30,Soft Combat,deportes,Todo el día
-act016,domingo,18:00,Juegos de mesa estrategia,juegos_mesa,1h
-act017,domingo,19:00,Sesión libre: karaoke y más,otros,1h
+id,dia,hora,titulo,tipo,duracion,detalle,enlace
+act001,sabado,10:00,Torneo de Smash,videojuegos,1h,Gran torneo de Smash. ¡Demuestra tus habilidades!,https://www.google.es
+act002,sabado,11:00,Juegos de mesa para peques,juegos_mesa,1h,,
+act003,sabado,12:00,Charla sobre narrativa en rol,charlas,1h,,
+act004,sabado,13:30,Taller de Pintura Miniaturas,talleres,1h,,https://drive.google.com/file/d/10GMCed1RCrPLW15mQ9wh-gkwhvh0QZLk/view
+act005,sabado,14:00,Rol de mesa: D&D,rol_mesa,2h,,
+act006,sabado,16:00,Rol en vivo: misterio medieval,rol_vivo,2h,,
+act007,sabado,10:00,Juegos de mesa,juegos_mesa,Todo el día,,
+act008,sabado,10:00,Tiro con arco,deportes,Todo el día,,
+act009,sabado,19:00,Concurso de cosplay,concursos,1h,,
+act010,domingo,10:00,Torneo de Mario Kart,videojuegos,1h,,
+act011,domingo,11:00,Charla sobre anime y cultura pop,charlas,1h,,
+act012,domingo,12:00,Taller de dibujo manga,talleres,1h,,
+act013,domingo,12:00,Rol de mesa: La llamada de Cthulhu,rol_mesa,2h,,
+act014,domingo,15:00,Concurso de trivial friki,concursos,1h,,
+act015,domingo,10:00,Soft Combat,deportes,Todo el día,,
+act016,domingo,10:00,Juegos de mesa,juegos_mesa,Todo el día,,
+act017,domingo,19:00,Sesión libre: karaoke y más,otros,1h,,
