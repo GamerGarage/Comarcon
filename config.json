@@ -23,12 +23,12 @@
     "titulo_faqs": "Preguntas Frecuentes",
     "faqs": [
       {
-        "pregunta": "¿Dónde puedo recoger mi acreditación?",
-        "respuesta": "Puedes recogerla en la entrada principal del evento desde las 09:00 AM."
+        "pregunta": "¿Cuanto cuesta la entrada?",
+        "respuesta": "NADA! Nuestras jornadas son de acceso libre y totalmente gratuitas!"
       },
       {
         "pregunta": "¿Hay servicio de comida y bebida?",
-        "respuesta": "Sí, disponemos de una zona de food trucks y cafetería dentro del recinto."
+        "respuesta": "Sí, hay una cafeteria en las instalaciones del recinto."
       },
       {
         "pregunta": "¿Hay aparcamiento disponible?",
@@ -36,6 +36,6 @@
       }
     ],
     "texto_sobre_nosotros": "Comarcon es un evento organizado por la Asociacion Juvenil La Comarca, dedicado a la cultura del ocio alterntivo. Nuestro objetivo es crear un espacio de encuentro para la comunidad y promover el entretenimiento interactivo.",
-    "url_web": "https://www.comarcon.es"
-  }
+    "url_web": "https://lacomarcon.com"
+
 }
