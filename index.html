@@ -744,13 +744,13 @@ function updateUIFromConfig() {
             if (!appConfig) return; 
 
             if (view === 'horario') {
-                mainTitleElement.innerText = appConfig.app_titles.schedule_h1 || "Horario";
+                mainTitleElement.innerText = appConfig.titulos_app.h1_horario || "Horario";
                 adjustTitleFontSize(); 
 
                 navToggleIcon.classList.remove('fa-arrow-left');
                 navToggleIcon.classList.add('fa-info');
             } else if (view === 'info') { 
-                mainTitleElement.innerText = appConfig.app_titles.info_h1 || "Información";
+                mainTitleElement.innerText = appConfig.titulos_app.h_informacion || "Información";
                 adjustTitleFontSize(); 
 
                 navToggleIcon.classList.remove('fa-info');
