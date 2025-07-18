@@ -1,41 +1,41 @@
 {
-  "app_titles": {
-    "schedule_h1": "Horario",
-    "info_h1": "Información"
+  "titulos_app": {
+    "h1_horario": "Horario",
+    "h1_informacion": "Información"
   },
-  "event_subtitle": "Torrevieja - 2026",
-  "event_year": 2025,
-  "event_month_0_indexed": 3,  
-  "event_day_saturday": 28,    
-  "event_day_sunday": 29,        
-  "notification_preamble": "¡Recordatorio de Comarcon! ",
-  "alarm_offset_minutes": 15,
+  "subtitulo_evento": "Torrevieja - 2026",
+  "ano_evento": 2025,
+  "mes_evento_0_indexado": 3,
+  "dia_evento_sabado": 28,
+  "dia_evento_domingo": 29,
+  "prefijo_notificacion": "¡Recordatorio de Comarcon! ",
+  "minutos_desfase_alarma": 15,
 
-  "info_section": {
-    "welcome_text": "¡Bienvenido a Comarcon 2025! Prepárate para dos días llenos de diversión, juegos y competición en el corazón de Torrevieja. Explora el horario, marca tus actividades favoritas y recibe notificaciones para no perderte nada.",
-   
-    "map_title": "Mapa del Recinto", 
-     "map_image_url": "https://gamergarage.github.io/Comarcon/mapa_recinto.png", 
-    "map_pdf_url": "https://tu-dominio.com/ruta/a/tu_mapa_alta_resolucion.pdf", 
-    "contact_email": "info@lacomarcon.es",
-    "social_media_facebook": "https://www.facebook.com/comarcon",
-    "social_media_instagram": "https://www.instagram.com/lacomarcon",
-    "faq_title": "Preguntas Frecuentes",
+  "seccion_informacion": {
+    "texto_bienvenida": "¡Bienvenido a Comarcon 2026! Prepárate para dos días llenos de diversión, juegos y competición en el corazón de Torrevieja. Explora el horario, marca tus actividades favoritas y recibe notificaciones para no perderte nada.",
+    
+    "titulo_mapa": "Mapa del Recinto",
+    "url_imagen_mapa": "https://gamergarage.github.io/Comarcon/mapa_recinto.png",
+    "url_pdf_mapa": "https://tu-dominio.com/ruta/a/tu_mapa_alta_resolucion.pdf",
+    "email_contacto": "info@lacomarcon.es",
+    "red_social_facebook": "https://www.facebook.com/comarcon",
+    "red_social_instagram": "https://www.instagram.com/lacomarcon",
+    "titulo_faqs": "Preguntas Frecuentes",
     "faqs": [
       {
-        "question": "¿Dónde puedo recoger mi acreditación?",
-        "answer": "Puedes recogerla en la entrada principal del evento desde las 09:00 AM."
+        "pregunta": "¿Dónde puedo recoger mi acreditación?",
+        "respuesta": "Puedes recogerla en la entrada principal del evento desde las 09:00 AM."
       },
       {
-        "question": "¿Hay servicio de comida y bebida?",
-        "answer": "Sí, disponemos de una zona de food trucks y cafetería dentro del recinto."
+        "pregunta": "¿Hay servicio de comida y bebida?",
+        "respuesta": "Sí, disponemos de una zona de food trucks y cafetería dentro del recinto."
       },
       {
-        "question": "¿Hay aparcamiento disponible?",
-        "answer": "Sí, hay aparcamiento público cerca del recinto."
+        "pregunta": "¿Hay aparcamiento disponible?",
+        "respuesta": "Sí, hay aparcamiento público cerca del recinto."
       }
     ],
-    "about_us_text": "Comarcon es un evento organizado por GamerGarage, dedicado a la cultura del videojuego y el ocio digital. Nuestro objetivo es crear un espacio de encuentro para la comunidad y promover el entretenimiento interactivo.",
-    "website_url": "https://www.comarcon.es"
+    "texto_sobre_nosotros": "Comarcon es un evento organizado por la Asociacion Juvenil La Comarca, dedicado a la cultura del ocio alterntivo. Nuestro objetivo es crear un espacio de encuentro para la comunidad y promover el entretenimiento interactivo.",
+    "url_web": "https://www.comarcon.es"
   }
 }
