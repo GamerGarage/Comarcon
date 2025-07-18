@@ -806,36 +806,49 @@ function updateUIFromConfig() {
         cargarDesdeCSV(); 
 
         document.addEventListener('DOMContentLoaded', function() {
-            // Si window.appConfigJson existe (estamos en Android WebView), lo usamos.
-            // Si no, lo cargamos desde la URL para la versión web.
-            if (window.appConfigJson) {
-                appConfig = JSON.parse(window.appConfigJson);
+    // Si window.appConfigJson existe (estamos en Android WebView), lo usamos.
+    // Si no, lo cargamos desde la URL para la versión web.
+    if (window.appConfigJson) {
+        appConfig = JSON.parse(window.appConfigJson); // Esta línea es crucial para Android
+        onAppConfigLoaded();
+    } else {
+        // Versión web: Cargar config.json directamente
+        fetch(CONFIG_JSON_WEB_URL)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(data => {
+                appConfig = data;
                 onAppConfigLoaded();
-            } else {
-                // Versión web: Cargar config.json directamente
-                fetch(CONFIG_JSON_WEB_URL)
-                    .then(response => {
-                        if (!response.ok) {
-                            throw new Error(`HTTP error! status: ${response.status}`);
-                        }
-                        return response.json();
-                    })
-                    .then(data => {
-                        appConfig = data;
-                        onAppConfigLoaded();
-                    })
-                    .catch(error => {
-                        console.error("Error al cargar config.json para la versión web:", error);
-                        Android.showToast("Error al cargar la configuración de la app desde la web.");
-                        // Si falla la carga del JSON, al menos intenta inicializar con valores por defecto
-                        appConfig = {
-                            app_titles: { schedule_h1: "Horario", info_h1: "Información" },
-                            event_subtitle: "Cargando evento...",
-                            info_section: { map_title: "Mapa", welcome_text: "Bienvenido.", faq_title: "FAQs", about_us_text: "Sobre nosotros."}
-                        };
-                        onAppConfigLoaded(); // Llama a la función para que la UI se inicialice con lo que tenga
-                    });
-            }
+            })
+            .catch(error => {
+                console.error("Error al cargar config.json para la versión web:", error);
+                Android.showToast("Error al cargar la configuración de la app desde la web.");
+                // Si falla la carga del JSON, al menos intenta inicializar con valores por defecto
+                appConfig = {
+                    "titulos_app": { "h1_horario": "Horario", "h1_informacion": "Información" },
+                    "subtitulo_evento": "Cargando evento...",
+                    "seccion_informacion": {
+                        "titulo_mapa": "Mapa",
+                        "texto_bienvenida": "Bienvenido.",
+                        "titulo_faqs": "FAQs",
+                        "texto_sobre_nosotros": "Sobre nosotros."
+                    }
+                };
+                onAppConfigLoaded();
+            });
+    }
+    
+    updateTitleAndIcon('horario'); 
+    horarioView.classList.add('active-view');
+    infoView.classList.remove('active-view');
+
+    window.addEventListener('resize', adjustTitleFontSize);
+});
+
             
             updateTitleAndIcon('horario'); 
             horarioView.classList.add('active-view');
