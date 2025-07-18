@@ -8,7 +8,7 @@
   "event_month_0_indexed": 6,  // Julio es el mes 6 (0-indexado: Enero=0, Febrero=1, etc.)
   "event_day_saturday": 12,    // Día del sábado del evento (ej. 12 para 12 de Julio)
   "event_day_sunday": 13,      // Día del domingo del evento (ej. 13 para 13 de Julio)
-  "map_image_url": "https://tu-dominio.com/ruta/a/tu_mapa_del_evento.png", // <<-- ¡REEMPLAZA CON TU URL REAL DEL MAPA!
+  "map_image_url": "https://gamergarage.github.io/Comarcon/mapa_recinto.png", // <<-- ¡REEMPLAZA CON TU URL REAL DEL MAPA!
   "notification_preamble": "¡Recordatorio de Comarcon! ",
   "alarm_offset_minutes": 15,
 
