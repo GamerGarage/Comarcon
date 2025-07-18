@@ -5,7 +5,7 @@
   },
   "event_subtitle": "Torrevieja - 2025",
   "event_year": 2025,
-  "event_month_0_indexed": 6,  // Julio es el mes 6 (0-indexado: Enero=0, Febrero=1, etc.)
+  "event_month_0_indexed": 6,  
   "event_day_saturday": 12,    // Día del sábado del evento (ej. 12 para 12 de Julio)
   "event_day_sunday": 13,      // Día del domingo del evento (ej. 13 para 13 de Julio)  
   "notification_preamble": "¡Recordatorio de Comarcon! ",
