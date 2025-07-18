@@ -432,91 +432,107 @@
         }
 
 
-        // Función para actualizar la UI con los datos del JSON
-        function updateUIFromConfig() {
-            if (!appConfig) {
-                console.warn("updateUIFromConfig: appConfig no está cargado.");
-                return; 
-            }
+       // Función para actualizar la UI con los datos del JSON
+function updateUIFromConfig() {
+    if (!appConfig) {
+        console.warn("updateUIFromConfig: appConfig no está cargado.");
+        return;
+    }
 
-            // --- Títulos y Subtítulos ---
-            if (mainTitleElement && appConfig.app_titles) {
-                mainTitleElement.innerText = appConfig.app_titles.schedule_h1 || "Horario";
-            }
-            if (eventSubtitleElement && appConfig.event_subtitle) {
-                eventSubtitleElement.innerText = appConfig.event_subtitle;
-            }
+    // --- Títulos y Subtítulos ---
+    // CAMBIO: appConfig.app_titles -> appConfig.titulos_app
+    // CAMBIO: appConfig.app_titles.schedule_h1 -> appConfig.titulos_app.h1_horario
+    if (mainTitleElement && appConfig.titulos_app) {
+        mainTitleElement.innerText = appConfig.titulos_app.h1_horario || "Horario";
+    }
+    // CAMBIO: appConfig.event_subtitle -> appConfig.subtitulo_evento
+    if (eventSubtitleElement && appConfig.subtitulo_evento) {
+        eventSubtitleElement.innerText = appConfig.subtitulo_evento;
+    }
 
-            // --- Sección de Información ---
-            const infoSection = appConfig.info_section;
-            if (infoSection) {
-                document.getElementById('info-welcome-text').innerText = infoSection.welcome_text || '';
-                
-                // --- MAPA ---
-                const mapTitleElement = document.getElementById('map-section-title'); 
-                if (mapTitleElement) {
-                    mapTitleElement.innerText = infoSection.map_title || "Mapa"; 
-                }
+    // --- Sección de Información ---
+    // CAMBIO: appConfig.info_section -> appConfig.seccion_informacion
+    const infoSection = appConfig.seccion_informacion;
+    if (infoSection) {
+        // CAMBIO: infoSection.welcome_text -> infoSection.texto_bienvenida
+        document.getElementById('info-welcome-text').innerText = infoSection.texto_bienvenida || '';
 
-                const mapImageElement = document.getElementById('event-map-image');
-                const mapLinkElement = document.getElementById('event-map-link'); 
-
-                if (mapImageElement && mapLinkElement && infoSection.map_image_url) {
-                    mapImageElement.src = infoSection.map_image_url;
-                    mapImageElement.style.display = 'block'; 
-
-                    if (infoSection.map_pdf_url) {
-                        mapLinkElement.href = infoSection.map_pdf_url;
-                        mapLinkElement.style.display = 'block'; 
-                    } else {
-                        mapLinkElement.href = "#"; 
-                    }
-                } else {
-                    console.warn("No se pudo cargar el mapa. Elemento, enlace o URL de imagen faltante/inválido.");
-                }
-
-                document.getElementById('info-faq-title').innerText = infoSection.faq_title || '';
-                const faqListElement = document.getElementById('info-faq-list');
-                if (faqListElement && infoSection.faqs && Array.isArray(infoSection.faqs)) {
-                    faqListElement.innerHTML = ''; 
-                    infoSection.faqs.forEach(faq => {
-                        const faqItem = document.createElement('div');
-                        faqItem.classList.add('faq-item');
-                        faqItem.innerHTML = `<h3>${faq.question}</h3><p>${faq.answer}</p>`;
-                        faqListElement.appendChild(faqItem);
-                    });
-                }
-
-                const contactEmailElement = document.getElementById('info-contact-email');
-                if (contactEmailElement && infoSection.contact_email) {
-                    contactEmailElement.href = `mailto:${infoSection.contact_email}`;
-                    contactEmailElement.innerText = infoSection.contact_email;
-                }
-
-                const socialFacebookElement = document.getElementById('info-social-facebook');
-                if (socialFacebookElement && infoSection.social_media_facebook) {
-                    socialFacebookElement.href = infoSection.social_media_facebook;
-                    socialFacebookElement.innerText = "Facebook Oficial"; 
-                }
-
-                const socialInstagramElement = document.getElementById('info-social-instagram');
-                if (socialInstagramElement && infoSection.social_media_instagram) {
-                    socialInstagramElement.href = infoSection.social_media_instagram;
-                    socialInstagramElement.innerText = "Instagram Oficial"; 
-                }
-
-                const websiteUrlElement = document.getElementById('info-website-url');
-                if (websiteUrlElement && infoSection.website_url) {
-                    websiteUrlElement.href = infoSection.website_url;
-                    websiteUrlElement.innerText = infoSection.website_url.replace(/(^\w+:|^)\/\//, ''); 
-                }
-
-                document.getElementById('info-about-us-text').innerText = infoSection.about_us_text || '';
-            }
-
-            renderHorario();
-            adjustTitleFontSize(); 
+        // --- MAPA ---
+        const mapTitleElement = document.getElementById('map-section-title');
+        if (mapTitleElement) {
+            // CAMBIO: infoSection.map_title -> infoSection.titulo_mapa
+            mapTitleElement.innerText = infoSection.titulo_mapa || "Mapa";
         }
+
+        const mapImageElement = document.getElementById('event-map-image');
+        const mapLinkElement = document.getElementById('event-map-link');
+
+        // CAMBIO: infoSection.map_image_url -> infoSection.url_imagen_mapa
+        if (mapImageElement && mapLinkElement && infoSection.url_imagen_mapa) {
+            mapImageElement.src = infoSection.url_imagen_mapa;
+            mapImageElement.style.display = 'block';
+
+            // CAMBIO: infoSection.map_pdf_url -> infoSection.url_pdf_mapa
+            if (infoSection.url_pdf_mapa) {
+                mapLinkElement.href = infoSection.url_pdf_mapa;
+                mapLinkElement.style.display = 'block';
+            } else {
+                mapLinkElement.href = "#";
+            }
+        } else {
+            console.warn("No se pudo cargar el mapa. Elemento, enlace o URL de imagen faltante/inválido.");
+        }
+
+        // CAMBIO: infoSection.faq_title -> infoSection.titulo_faqs
+        document.getElementById('info-faq-title').innerText = infoSection.titulo_faqs || '';
+        const faqListElement = document.getElementById('info-faq-list');
+        // CAMBIO: infoSection.faqs -> infoSection.faqs (la clave 'faqs' no cambia, pero sí sus propiedades internas)
+        if (faqListElement && infoSection.faqs && Array.isArray(infoSection.faqs)) {
+            faqListElement.innerHTML = '';
+            infoSection.faqs.forEach(faq => {
+                const faqItem = document.createElement('div');
+                faqItem.classList.add('faq-item');
+                // CAMBIO: faq.question -> faq.pregunta, faq.answer -> faq.respuesta
+                faqItem.innerHTML = `<h3>${faq.pregunta}</h3><p>${faq.respuesta}</p>`;
+                faqListElement.appendChild(faqItem);
+            });
+        }
+
+        const contactEmailElement = document.getElementById('info-contact-email');
+        // CAMBIO: infoSection.contact_email -> infoSection.email_contacto
+        if (contactEmailElement && infoSection.email_contacto) {
+            contactEmailElement.href = `mailto:${infoSection.email_contacto}`;
+            contactEmailElement.innerText = infoSection.email_contacto;
+        }
+
+        const socialFacebookElement = document.getElementById('info-social-facebook');
+        // CAMBIO: infoSection.social_media_facebook -> infoSection.red_social_facebook
+        if (socialFacebookElement && infoSection.red_social_facebook) {
+            socialFacebookElement.href = infoSection.red_social_facebook;
+            socialFacebookElement.innerText = "Facebook Oficial";
+        }
+
+        const socialInstagramElement = document.getElementById('info-social-instagram');
+        // CAMBIO: infoSection.social_media_instagram -> infoSection.red_social_instagram
+        if (socialInstagramElement && infoSection.red_social_instagram) {
+            socialInstagramElement.href = infoSection.red_social_instagram;
+            socialInstagramElement.innerText = "Instagram Oficial";
+        }
+
+        const websiteUrlElement = document.getElementById('info-website-url');
+        // CAMBIO: infoSection.website_url -> infoSection.url_web
+        if (websiteUrlElement && infoSection.url_web) {
+            websiteUrlElement.href = infoSection.url_web;
+            websiteUrlElement.innerText = infoSection.url_web.replace(/(^\w+:|^)\/\//, '');
+        }
+
+        // CAMBIO: infoSection.about_us_text -> infoSection.texto_sobre_nosotros
+        document.getElementById('info-about-us-text').innerText = infoSection.texto_sobre_nosotros || '';
+    }
+
+    // renderHorario(); // <<-- ELIMINADA ESTA LÍNEA
+    adjustTitleFontSize(); // Llama al ajuste de fuente después de cargar la UI
+}
 
 
         function agruparPorHora(lista) {
