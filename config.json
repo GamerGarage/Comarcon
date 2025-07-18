@@ -3,11 +3,11 @@
     "schedule_h1": "Horario",
     "info_h1": "Información"
   },
-  "event_subtitle": "Torrevieja - 2025",
+  "event_subtitle": "Torrevieja - 2026",
   "event_year": 2025,
-  "event_month_0_indexed": 6,  
-  "event_day_saturday": 12,    
-  "event_day_sunday": 13,        
+  "event_month_0_indexed": 3,  
+  "event_day_saturday": 28,    
+  "event_day_sunday": 29,        
   "notification_preamble": "¡Recordatorio de Comarcon! ",
   "alarm_offset_minutes": 15,
 
