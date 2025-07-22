@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    
-    <link rel="icon" type="image/png" href="estrella-trans.png"/> 
+
+    <link rel="icon" type="image/png" href="estrella-trans.png"/>
 
     <script src="https://cdn.tailwindcss.com"></script>
 
@@ -13,7 +13,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Permanent+Marker&display=swap" rel="stylesheet">
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    
+
     <title>Horario - La Comarcón</title>
 
     <style>
@@ -49,7 +49,7 @@
 
         /* Clases de Tailwind para el tamaño del h1 (aplicadas con JS) */
         /* Estas clases ahora son menos relevantes, el JS las sobrescribirá con un estilo inline */
-        .text-size-horario { /* font-size: 2.8rem; */ } 
+        .text-size-horario { /* font-size: 2.8rem; */ }
         .text-size-informacion { /* font-size: 2.2rem; */ }
 
         /* Estilos para el subtítulo del evento */
@@ -68,7 +68,7 @@
             position: absolute;
             left: 1rem;
             top: 1rem;
-            border-radius: 9999px; /* rounded-full de Tailwind */
+            //border-radius: 9999px; /* rounded-full de Tailwind */
         }
 
         /* Estilo para el contenedor del icono de navegación (info/back) */
@@ -193,12 +193,21 @@
         }
 
         /* Contenedores de vista (horario/información) */
+        /* Inicialmente ocultos para evitar el parpadeo */
         .view-container {
-            display: none; /* Oculto por defecto */
+            display: none;
         }
         .view-container.active-view {
             display: block; /* Visible cuando está activo */
         }
+        /* Ocultar el contenido principal hasta que se cargue la configuración */
+        .main-content-wrapper {
+            display: none;
+        }
+        .main-content-wrapper.loaded {
+            display: block;
+        }
+
 
         /* Estilos para la sección de Información */
         .info-section-content {
@@ -268,567 +277,665 @@
     </style>
 </head>
 <body class="text-gray-800">
-    <div class="max-w-md mx-auto p-4 relative main-container"> 
-        <div class="mb-4">
-            <img src="estrella-trans.png" alt="Logo La Comarcón" class="logo-img" id="logo-btn" /> 
-            
-            <a href="#" id="nav-toggle-btn" class="nav-icon-container"> 
-                <i class="fas fa-info nav-icon"></i> 
-            </a>
+<!-- Nuevo contenedor para el contenido principal, inicialmente oculto -->
+<div class="max-w-md mx-auto p-4 relative main-container main-content-wrapper">
+    <div class="mb-4">
+        <img src="estrella-trans.png" alt="Logo La Comarcón" class="logo-img" id="logo-btn" />
 
-            <!-- Título principal y subtítulo que se actualizarán desde el JSON -->
-            <h1 id="main-title" class="text-size-horario">Cargando...</h1> 
-            <p id="event-subtitle" class="subtitle-text">Cargando...</p>
-        </div>
+        <a href="#" id="nav-toggle-btn" class="nav-icon-container">
+            <i class="fas fa-info nav-icon"></i>
+        </a>
 
-        <!-- Contenedor para la vista de Horario -->
-        <div id="horario-view" class="view-container active-view">
-            <div class="flex justify-center mb-4 space-x-2">
-                <button id="dia1Btn" class="day-button active">Sábado</button>
-                <button id="dia2Btn" class="day-button">Domingo</button>
-            </div>
-
-            <div class="flex overflow-x-auto mb-4 space-x-2 pb-2">
-                <button onclick="setFiltro('todas')" class="filter-button bg-gray-200 text-gray-800 active-filter">Todas</button>
-                <button onclick="setFiltro('favoritos')" class="filter-button bg-yellow-200 text-yellow-800">⭐ Favoritos</button>
-                <button onclick="setFiltro('rol_mesa')" class="filter-button bg-purple-100 text-purple-700">Rol de mesa</button>
-                <button onclick="setFiltro('rol_vivo')" class="filter-button bg-pink-100 text-pink-700">Rol en vivo</button>
-                <button onclick="setFiltro('videojuegos')" class="filter-button bg-blue-100 text-blue-700">Videojuegos</button>
-                <button onclick="setFiltro('juegos_mesa')" class="filter-button bg-indigo-100 text-indigo-700">Juegos de mesa</button>
-                <button onclick="setFiltro('deportes')" class="filter-button bg-yellow-100 text-yellow-700">Deportes</button>
-                <button onclick="setFiltro('concursos')" class="filter-button bg-red-100 text-red-700">Concursos</button>
-                <button onclick="setFiltro('talleres')" class="filter-button bg-green-100 text-green-700">Talleres</button>
-                <button onclick="setFiltro('charlas')" class="filter-button bg-orange-100 text-orange-700">Charlas</button>
-                <button onclick="setFiltro('otros')" class="filter-button bg-gray-300 text-gray-800">Otros</button>
-            </div>
-
-            <div id="horario" class="space-y-4"></div>
-        </div>
-
-        <!-- Contenedor para la vista de Información (anteriormente mapa-container) -->
-        <div id="info-view" class="view-container">
-            <div class="info-section-content">
-                <p id="info-welcome-text"></p>
-
-                <div class="map-container">
-                    <h2 id="map-section-title" class="text-xl font-bold mb-4">Mapa</h2> <!-- Título del mapa -->
-                    <a id="event-map-link" href="#" target="_blank"> <!-- Enlace alrededor de la imagen -->
-                        <img id="event-map-image" src="" alt="Mapa del evento" class="map-image" style="display: none;">
-                    </a>
-                    <p class="mt-2 text-sm text-gray-600">Haz clic en la imagen para ver el mapa en alta resolución.</p>
-                </div>
-                
-                <h2 id="info-faq-title"></h2>
-                <div id="info-faq-list">
-                    <!-- Las FAQs se generarán aquí dinámicamente -->
-                </div>
-
-                <h2>Contacto y Redes Sociales</h2>
-                <ul>
-                    <li>Email: <a id="info-contact-email" href="#" target="_blank"></a></li>
-                    <li>Facebook: <a id="info-social-facebook" href="#" target="_blank"></a></li>
-                    <li>Instagram: <a id="info-social-instagram" href="#" target="_blank"></a></li>
-                    <li>Web: <a id="info-website-url" href="#" target="_blank"></a></li>
-                </ul>
-
-                <h2>Sobre Nosotros</h2>
-                <p id="info-about-us-text"></p>
-            </div>
-        </div>
+        <!-- Título principal y subtítulo que se actualizarán desde el JSON -->
+        <h1 id="main-title" class="text-size-horario">Cargando...</h1>
+        <p id="event-subtitle" class="subtitle-text">Cargando...</p>
     </div>
 
-    <script>
-        let actividades = { sabado: [], domingo: [] };
-        let diaActual = "sabado";
-        let filtroActual = "todas";
-        let favoritos = new Set(JSON.parse(localStorage.getItem('horarioFavoritos')) || []);
-        let actividadAbierta = null;
-        let appConfig = null; // Variable global para almacenar la configuración del JSON
+    <!-- Contenedor para la vista de Horario -->
+    <div id="horario-view" class="view-container">
+        <div class="flex justify-center mb-4 space-x-2">
+            <button id="dia1Btn" class="day-button active">Sábado</button>
+            <button id="dia2Btn" class="day-button">Domingo</button>
+        </div>
 
-        // Elementos principales de la UI
-        const mainTitleElement = document.getElementById('main-title');
-        const eventSubtitleElement = document.getElementById('event-subtitle');
-        const navToggleButton = document.getElementById('nav-toggle-btn');
-        const navToggleIcon = navToggleButton.querySelector('i');
-        const logoBtn = document.getElementById('logo-btn');
+        <div class="flex overflow-x-auto mb-4 space-x-2 pb-2">
+            <button onclick="setFiltro('todas')" class="filter-button bg-gray-200 text-gray-800 active-filter">Todas</button>
+            <button onclick="setFiltro('favoritos')" class="filter-button bg-yellow-200 text-yellow-800">⭐ Favoritos</button>
+            <button onclick="setFiltro('rol_mesa')" class="filter-button bg-purple-100 text-purple-700">Rol de mesa</button>
+            <button onclick="setFiltro('rol_vivo')" class="filter-button bg-pink-100 text-pink-700">Rol en vivo</button>
+            <button onclick="setFiltro('videojuegos')" class="filter-button bg-blue-100 text-blue-700">Videojuegos</button>
+            <button onclick="setFiltro('juegos_mesa')" class="filter-button bg-indigo-100 text-indigo-700">Juegos de mesa</button>
+            <button onclick="setFiltro('deportes')" class="filter-button bg-yellow-100 text-yellow-700">Deportes</button>
+            <button onclick="setFiltro('concursos')" class="filter-button bg-red-100 text-red-700">Concursos</button>
+            <button onclick="setFiltro('talleres')" class="filter-button bg-green-100 text-green-700">Talleres</button>
+            <button onclick="setFiltro('charlas')" class="filter-button bg-orange-100 text-orange-700">Charlas</button>
+            <button onclick="setFiltro('otros')" class="filter-button bg-gray-300 text-gray-800">Otros</button>
+        </div>
 
-        const horarioView = document.getElementById('horario-view');
-        const infoView = document.getElementById('info-view');
+        <div id="horario" class="space-y-4"></div>
+    </div>
 
-        let currentView = 'horario'; 
+    <!-- Contenedor para la vista de Información (anteriormente mapa-container) -->
+    <div id="info-view" class="view-container">
+        <div class="info-section-content">
+            <p id="info-welcome-text"></p>
 
-        // URL de tu Google Sheet exportado como CSV
-        const URL_CSV = "https://gamergarage.github.io/Comarcon/horario.csv";
+            <div class="map-container">
+                <h2 id="map-section-title" class="text-xl font-bold mb-4">Mapa</h2> <!-- Título del mapa -->
+                <a id="event-map-link" href="#" target="_blank"> <!-- Enlace alrededor de la imagen -->
+                    <img id="event-map-image" src="" alt="Mapa del evento" class="map-image" style="display: none;">
+                </a>
+                <p class="mt-2 text-sm text-gray-600">Haz clic en la imagen para ver el mapa en alta resolución.</p>
+            </div>
 
-        // URL del archivo config.json para la versión web
-        // !!! IMPORTANTE: REEMPLAZA ESTA URL CON LA URL PÚBLICA DE TU CONFIG.JSON !!!
-        const CONFIG_JSON_WEB_URL = "https://gamergarage.github.io/Comarcon/config.json"; 
+            <h2 id="info-faq-title"></h2>
+            <div id="info-faq-list">
+                <!-- Las FAQs se generarán aquí dinámicamente -->
+            </div>
 
-        // --- Polyfill para el objeto Android en la versión web ---
-        // Esto evita errores cuando la app no se ejecuta en un WebView de Android
-        if (typeof Android === 'undefined') {
-            window.Android = {
-                showToast: function(message) {
-                    console.log("[WEB APP] Toast (Notificación): " + message);
-                    // alert("Notificación: " + message); // Puedes usar alert para depuración, pero es molesto
-                },
-                programarAlertaActividad: function(idActividad, titulo, horaInicio, dia) {
-                    console.log(`[WEB APP] Alerta programada (NO DISPONIBLE EN WEB): ID: ${idActividad}, Título: ${titulo}, Hora: ${horaInicio}, Día: ${dia}`);
-                    alert(`Alerta para '${titulo}' programada (las notificaciones no están disponibles en la versión web).`);
-                },
-                cancelarAlertaActividad: function(idActividad) {
-                    console.log(`[WEB APP] Alerta cancelada (NO DISPONIBLE EN WEB): ID: ${idActividad}`);
-                    alert("Alerta cancelada (las notificaciones no están disponibles en la versión web).");
-                }
-            };
-        }
+            <h2>Contacto y Redes Sociales</h2>
+            <ul>
+                <li>Email: <a id="info-contact-email" href="#" target="_blank"></a></li>
+                <li>Facebook: <a id="info-social-facebook" href="#" target="_blank"></a></li>
+                <li>Instagram: <a id="info-social-instagram" href="#" target="_blank"></a></li>
+                <li>Web: <a id="info-website-url" href="#" target="_blank"></a></li>
+            </ul>
 
-        // --- FUNCIONES DE MANEJO DE VISTAS Y DATOS ---
+            <h2>Sobre Nosotros</h2>
+            <p id="info-about-us-text"></p>
+        </div>
+    </div>
+</div>
 
-        // Función que se llama cuando la configuración (JSON) ha sido cargada
-        // Ahora puede ser llamada desde Kotlin (WebView) o desde el fetch (Web)
-        function onAppConfigLoaded() {
-            if (appConfig) { // appConfig ya estará asignado por la llamada en DOMContentLoaded o por Kotlin
-                console.log("Configuración de la app cargada en JavaScript:", appConfig);
-                updateUIFromConfig();
-            } else {
-                console.warn("appConfig no está disponible en onAppConfigLoaded.");
-                Android.showToast("Error al cargar la configuración de la app.");
-            }
-        }
+<script>
+    let actividades = { sabado: [], domingo: [] };
+    let diaActual = "sabado";
+    let filtroActual = "todas";
+    let favoritos = new Set(JSON.parse(localStorage.getItem('horarioFavoritos')) || []);
+    let actividadAbierta = null;
+    let appConfig = null; // Variable global para almacenar la configuración del JSON
 
-        // Función para ajustar el tamaño de la fuente del título principal
-        function adjustTitleFontSize() {
-            const logoRect = logoBtn.getBoundingClientRect();
-            const navIconRect = navToggleButton.getBoundingClientRect();
-            const mainContainerRect = document.querySelector('.main-container').getBoundingClientRect();
+    // Nuevas variables de estado para la sincronización
+    let isAppConfigLoaded = false;
+    let isCsvDataLoaded = false;
 
-            const availableWidth = navIconRect.left - logoRect.right;
-            
-            const containerPadding = 16; 
-            const aestheticMargin = 10; 
-            let effectiveWidth = availableWidth - (containerPadding * 2) - (aestheticMargin * 2);
+    // Elementos principales de la UI
+    const mainTitleElement = document.getElementById('main-title');
+    const eventSubtitleElement = document.getElementById('event-subtitle');
+    const navToggleButton = document.getElementById('nav-toggle-btn');
+    const navToggleIcon = navToggleButton.querySelector('i');
+    const logoBtn = document.getElementById('logo-btn');
 
-            if (effectiveWidth < 50) effectiveWidth = 50; 
+    const horarioView = document.getElementById('horario-view');
+    const infoView = document.getElementById('info-view');
+    const mainContentWrapper = document.querySelector('.main-content-wrapper'); // Contenedor principal de contenido
 
-            const minFontSizePx = 20; 
-            const maxFontSizePx = 45; 
-            const minEffectiveWidth = 150; 
-            const maxEffectiveWidth = 300; 
+    let currentView = 'horario';
 
-            let newFontSizePx;
+    // URL de tu Google Sheet exportado como CSV
+    const URL_CSV = "https://corsproxy.io/?url=https://docs.google.com/spreadsheets/d/e/2PACX-1vQVrAqpQlI4uhoa45UBxoRxsrnUB54QJ_LR5WgScbfFEGwkUannAa-0jRONdjsOwRoJ2hYNbMMAqcw-/pub?gid=0&single=true&output=csv";
 
-            if (effectiveWidth <= minEffectiveWidth) {
-                newFontSizePx = minFontSizePx;
-            } else if (effectiveWidth >= maxEffectiveWidth) {
-                newFontSizePx = maxFontSizePx;
-            } else {
-                newFontSizePx = minFontSizePx + 
-                                (effectiveWidth - minEffectiveWidth) * (maxFontSizePx - minFontSizePx) / 
-                                (maxEffectiveWidth - minEffectiveWidth);
-            }
-
-            mainTitleElement.style.fontSize = `${newFontSizePx}px`;
-        }
-
-
-       // Función para actualizar la UI con los datos del JSON
-function updateUIFromConfig() {
-    if (!appConfig) {
-        console.warn("updateUIFromConfig: appConfig no está cargado.");
-        return;
-    }
-
-    // --- Títulos y Subtítulos ---
-    // CAMBIO: appConfig.app_titles -> appConfig.titulos_app
-    // CAMBIO: appConfig.app_titles.schedule_h1 -> appConfig.titulos_app.h1_horario
-    if (mainTitleElement && appConfig.titulos_app) {
-        mainTitleElement.innerText = appConfig.titulos_app.h1_horario || "Horario";
-    }
-    // CAMBIO: appConfig.event_subtitle -> appConfig.subtitulo_evento
-    if (eventSubtitleElement && appConfig.subtitulo_evento) {
-        eventSubtitleElement.innerText = appConfig.subtitulo_evento;
-    }
-
-    // --- Sección de Información ---
-    // CAMBIO: appConfig.info_section -> appConfig.seccion_informacion
-    const infoSection = appConfig.seccion_informacion;
-    if (infoSection) {
-        // CAMBIO: infoSection.welcome_text -> infoSection.texto_bienvenida
-        document.getElementById('info-welcome-text').innerText = infoSection.texto_bienvenida || '';
-
-        // --- MAPA ---
-        const mapTitleElement = document.getElementById('map-section-title');
-        if (mapTitleElement) {
-            // CAMBIO: infoSection.map_title -> infoSection.titulo_mapa
-            mapTitleElement.innerText = infoSection.titulo_mapa || "Mapa";
-        }
-
-        const mapImageElement = document.getElementById('event-map-image');
-        const mapLinkElement = document.getElementById('event-map-link');
-
-        // CAMBIO: infoSection.map_image_url -> infoSection.url_imagen_mapa
-        if (mapImageElement && mapLinkElement && infoSection.url_imagen_mapa) {
-            mapImageElement.src = infoSection.url_imagen_mapa;
-            mapImageElement.style.display = 'block';
-
-            // CAMBIO: infoSection.map_pdf_url -> infoSection.url_pdf_mapa
-            if (infoSection.url_pdf_mapa) {
-                mapLinkElement.href = infoSection.url_pdf_mapa;
-                mapLinkElement.style.display = 'block';
-            } else {
-                mapLinkElement.href = "#";
-            }
-        } else {
-            console.warn("No se pudo cargar el mapa. Elemento, enlace o URL de imagen faltante/inválido.");
-        }
-
-        // CAMBIO: infoSection.faq_title -> infoSection.titulo_faqs
-        document.getElementById('info-faq-title').innerText = infoSection.titulo_faqs || '';
-        const faqListElement = document.getElementById('info-faq-list');
-        // CAMBIO: infoSection.faqs -> infoSection.faqs (la clave 'faqs' no cambia, pero sí sus propiedades internas)
-        if (faqListElement && infoSection.faqs && Array.isArray(infoSection.faqs)) {
-            faqListElement.innerHTML = '';
-            infoSection.faqs.forEach(faq => {
-                const faqItem = document.createElement('div');
-                faqItem.classList.add('faq-item');
-                // CAMBIO: faq.question -> faq.pregunta, faq.answer -> faq.respuesta
-                faqItem.innerHTML = `<h3>${faq.pregunta}</h3><p>${faq.respuesta}</p>`;
-                faqListElement.appendChild(faqItem);
-            });
-        }
-
-        const contactEmailElement = document.getElementById('info-contact-email');
-        // CAMBIO: infoSection.contact_email -> infoSection.email_contacto
-        if (contactEmailElement && infoSection.email_contacto) {
-            contactEmailElement.href = `mailto:${infoSection.email_contacto}`;
-            contactEmailElement.innerText = infoSection.email_contacto;
-        }
-
-        const socialFacebookElement = document.getElementById('info-social-facebook');
-        // CAMBIO: infoSection.social_media_facebook -> infoSection.red_social_facebook
-        if (socialFacebookElement && infoSection.red_social_facebook) {
-            socialFacebookElement.href = infoSection.red_social_facebook;
-            socialFacebookElement.innerText = "Facebook Oficial";
-        }
-
-        const socialInstagramElement = document.getElementById('info-social-instagram');
-        // CAMBIO: infoSection.social_media_instagram -> infoSection.red_social_instagram
-        if (socialInstagramElement && infoSection.red_social_instagram) {
-            socialInstagramElement.href = infoSection.red_social_instagram;
-            socialInstagramElement.innerText = "Instagram Oficial";
-        }
-
-        const websiteUrlElement = document.getElementById('info-website-url');
-        // CAMBIO: infoSection.website_url -> infoSection.url_web
-        if (websiteUrlElement && infoSection.url_web) {
-            websiteUrlElement.href = infoSection.url_web;
-            websiteUrlElement.innerText = infoSection.url_web.replace(/(^\w+:|^)\/\//, '');
-        }
-
-        // CAMBIO: infoSection.about_us_text -> infoSection.texto_sobre_nosotros
-        document.getElementById('info-about-us-text').innerText = infoSection.texto_sobre_nosotros || '';
-    }
-
-    // renderHorario(); // <<-- ELIMINADA ESTA LÍNEA
-    adjustTitleFontSize(); // Llama al ajuste de fuente después de cargar la UI
-}
-
-
-        function agruparPorHora(lista) {
-            const mapa = {};
-            lista.forEach(act => {
-                if (filtroActual === "favoritos" && !favoritos.has(act.id)) return;
-                if (filtroActual !== "todas" && filtroActual !== "favoritos" && act.tipo !== filtroActual) return;
-                if (!mapa[act.hora]) mapa[act.hora] = [];
-                mapa[act.hora].push(act);
-            });
-            return mapa;
-        }
-
-        function renderHorario() {
-            const contenedor = document.getElementById("horario");
-            contenedor.innerHTML = "";
-            const actividadesPorHora = agruparPorHora(actividades[diaActual]);
-            const horas = Object.keys(actividadesPorHora).sort();
-
-            actividadAbierta = null; 
-
-            if (horas.length === 0) {
-                contenedor.innerHTML = "<p class='text-center text-gray-300'>No hay actividades para esta selección.</p>";
-                return;
-            }
-
-            horas.forEach(hora => {
-                const bloque = document.createElement("div");
-                bloque.innerHTML = `<h3 class="text-sm font-semibold text-gray-200 mb-2">🕒 ${hora}</h3>`;
-                actividadesPorHora[hora].forEach(act => {
-                    const card = document.createElement("div");
-                    card.className = "bg-white p-4 mb-2 rounded shadow flex justify-between items-center activity-card"; 
-                    card.dataset.id = act.id; 
-
-                    const isFavoriteClass = favoritos.has(act.id) ? 'is-favorite' : '';
-                    const starIconClass = favoritos.has(act.id) ? 'fas' : 'far';
-
-                    card.innerHTML = `
-                        <div>
-                            <h2 class="text-lg font-bold">${act.titulo}</h2>
-                            <span class="category-tag ${getColor(act.tipo)}">${formateaCategoria(act.tipo)}</span>
-                            <div class="activity-detail">
-                                ${act.detalle || 'No hay información adicional.'}
-                                ${act.enlace ? `<div class="mt-2"><a href="${act.enlace}" target="_blank" class="text-blue-600 underline font-semibold">Apuntarse / Más info</a></div>` : ''}
-                            </div>
-                        </div>
-                        <div class="flex items-center">
-                            <div class="duration-text">⏱ ${act.duracion}</div>
-                            <span class="favorite-btn ${isFavoriteClass}" data-id="${act.id}">
-                                <i class="${starIconClass} fa-star"></i>
-                            </span>
-                        </div>
-                    `;
-                    card.addEventListener('click', (e) => {
-                        if (e.target.closest('.favorite-btn')) return;
-
-                        const detalle = card.querySelector('.activity-detail');
-                        
-                        if (actividadAbierta && actividadAbierta !== card) {
-                            actividadAbierta.querySelector('.activity-detail').style.display = 'none';
-                        }
-
-                        detalle.style.display = (detalle.style.display === 'block') ? 'none' : 'block';
-                        
-                        actividadAbierta = (detalle.style.display === 'block') ? card : null;
-                    });
-                    bloque.appendChild(card);
+    // --- Polyfill para el objeto Android en la versión web ---
+    // Esto evita errores cuando la app no se ejecuta en un WebView de Android
+    if (typeof Android === 'undefined') {
+        window.Android = {
+            showToast: function(message) {
+                console.log("[WEB APP] Toast (Notificación): " + message);
+                // alert("Notificación: " + message); // Puedes usar alert para depuración, pero es molesto
+            },
+            programarAlertaActividad: function(idActividad, titulo, horaInicio, dia) {
+                console.log(`[WEB APP] Alerta programada (NO DISPONIBLE EN WEB): ID: ${idActividad}, Título: ${titulo}, Hora: ${horaInicio}, Día: ${dia}`);
+                alert(`Alerta para '${titulo}' programada (las notificaciones no están disponibles en la versión web).`);
+            },
+            cancelarAlertaActividad: function(idActividad) {
+                console.log(`[WEB APP] Alerta cancelada (NO DISPONIBLE EN WEB): ID: ${idActividad}`);
+                alert("Alerta cancelada (las notificaciones no están disponibles en la versión web).");
+            },
+            // Función openUrl para el polyfill web
+            openUrl: function(url) {
+                console.log(`[WEB APP] Abriendo URL externa: ${url}`);
+                window.open(url, '_blank');
+            },
+            // Nuevo método polyfill para notificar a Kotlin que el contenido está renderizado
+            notifyContentRendered: function() {
+                console.log("[WEB APP] notifyContentRendered llamado (versión web).");
+            },
+            // Polyfill para getAppConfig en la versión web (carga localmente)
+            getAppConfig: function() {
+                console.log("[WEB APP] getAppConfig llamado (versión web). Cargando config.json localmente.");
+                // Simula la carga asíncrona para que el flujo sea similar al de Android
+                return new Promise((resolve, reject) => {
+                    fetch("config.json") // Asume que config.json está en la raíz para la web
+                        .then(response => {
+                            if (!response.ok) {
+                                throw new Error(`HTTP error! status: ${response.status}`);
+                            }
+                            return response.json();
+                        })
+                        .then(data => {
+                            console.log("[WEB APP] config.json cargado desde la web para getAppConfig.");
+                            resolve(JSON.stringify(data)); // Devuelve como string
+                        })
+                        .catch(error => {
+                            console.error("[WEB APP] Error al cargar config.json para getAppConfig en web:", error);
+                            alert("Error al cargar la configuración de la app desde la web.");
+                            // Devolver un JSON vacío o por defecto en caso de error
+                            resolve(JSON.stringify({
+                                "titulos_app": { "h1_horario": "Horario", "h1_informacion": "Información" },
+                                "subtitulo_evento": "Error de carga",
+                                "seccion_informacion": {
+                                    "titulo_mapa": "Mapa",
+                                    "texto_bienvenida": "Error al cargar la información.",
+                                    "titulo_faqs": "FAQs",
+                                    "texto_sobre_nosotros": "Información no disponible."
+                                }
+                            }));
+                        });
                 });
-                contenedor.appendChild(bloque);
-            });
-
-            document.querySelectorAll('.favorite-btn').forEach(button => {
-                button.addEventListener('click', toggleFavorite);
-            });
-        }
-
-        function formateaCategoria(tipo) {
-            const mapa = {
-                rol_mesa: "Rol de mesa", rol_vivo: "Rol en vivo", videojuegos: "Videojuegos",
-                juegos_mesa: "Juegos de mesa", deportes: "Deportes", concursos: "Concursos",
-                talleres: "Talleres", charlas: "Charlas", otros: "Otros", favoritos: "Favoritos"
-            };
-            return mapa[tipo] || tipo; 
-        }
-
-        function getColor(tipo) {
-            switch (tipo) {
-                case "rol_mesa": return "bg-purple-100 text-purple-700";
-                case "rol_vivo": return "bg-pink-100 text-pink-700";
-                case "videojuegos": return "bg-blue-100 text-blue-700";
-                case "juegos_mesa": return "bg-indigo-100 text-indigo-700";
-                case "deportes": return "bg-yellow-100 text-yellow-700";
-                case "concursos": return "bg-red-100 text-red-700";
-                case "talleres": return "bg-green-100 text-green-700";
-                case "charlas": return "bg-orange-100 text-orange-700";
-                case "otros": return "bg-gray-200 text-gray-800";
-                default: return "bg-gray-100 text-gray-700";
             }
-        }
+        };
+    }
 
-        function toggleFavorite(event) {
-            const button = event.currentTarget;
-            const icon = button.querySelector('i');
-            const id = button.dataset.id; 
+    // --- FUNCIONES DE MANEJO DE VISTAS Y DATOS ---
 
-            let actividadCompleta = null;
-            actividadCompleta = actividades.sabado.find(act => act.id === id);
-            if (!actividadCompleta) {
-                actividadCompleta = actividades.domingo.find(act => act.id === id);
-            }
+    // Función que se llama cuando AMBAS fuentes de datos están cargadas
+    function checkAllDataLoaded() {
+            console.log(`[checkAllDataLoaded] Verificando: Config cargada=${isAppConfigLoaded}, CSV cargado=${isCsvDataLoaded}`);
+            if (isAppConfigLoaded && isCsvDataLoaded) {
+                console.log("[checkAllDataLoaded] Todos los datos (Config y CSV) cargados y listos. Procediendo a renderizar UI.");
+                updateUIFromConfig(); // Actualiza la UI con la configuración y renderiza el horario
 
-            if (!actividadCompleta) {
-                console.error("ERROR: No se encontró la actividad con ID:", id);
-                if (typeof Android !== 'undefined') { // Usamos el polyfill de Android aquí
-                    Android.showToast("Error: Actividad no encontrada con ID: " + id + ". Revisa tus datos.");
-                }
-                return; 
-            }
+                // Asegurarse de que el contenido principal sea visible
+                mainContentWrapper.classList.add('loaded');
+                console.log("[checkAllDataLoaded] Clase 'loaded' añadida al main-content-wrapper.");
 
-            if (favoritos.has(id)) {
-                favoritos.delete(id);
-                button.classList.remove('is-favorite');
-                icon.classList.remove('fas');
-                icon.classList.add('far'); 
-
-                if (typeof Android !== 'undefined') { // Usamos el polyfill de Android aquí
-                    Android.cancelarAlertaActividad(actividadCompleta.id);
-                }
-
+                // Notificar a Kotlin que el contenido HTML/JS se ha renderizado y está listo
+                // Usamos un pequeño setTimeout para dar tiempo al navegador a pintar los cambios
+                setTimeout(() => {
+                    if (typeof Android !== 'undefined' && Android.notifyContentRendered) {
+                        Android.notifyContentRendered();
+                        console.log("[checkAllDataLoaded] Android.notifyContentRendered llamado después de renderizar el horario.");
+                    } else {
+                        console.warn("[checkAllDataLoaded] Android.notifyContentRendered no está disponible o ya se llamó.");
+                    }
+                }, 50); // Pequeño retraso para asegurar que el DOM se ha pintado
             } else {
-                favoritos.add(id);
-                button.classList.add('is-favorite');
-                icon.classList.remove('far');
-                icon.classList.add('fas'); 
-
-                if (typeof Android !== 'undefined') { // Usamos el polyfill de Android aquí
-                    const diaActividad = actividadCompleta.dia.toLowerCase().includes("sab") ? "sabado" : "domingo";
-                    Android.programarAlertaActividad(
-                        actividadCompleta.id,
-                        actividadCompleta.titulo,
-                        actividadCompleta.hora,
-                        diaActividad
-                    );
-                }
-            }
-
-            localStorage.setItem('horarioFavoritos', JSON.stringify(Array.from(favoritos)));
-
-            if (typeof Android !== 'undefined') { // Usamos el polyfill de Android aquí
-                Android.showToast("Favoritos guardados: " + Array.from(favoritos).length + " actividades.");
-            }
-
-            if (filtroActual === "favoritos") {
-                renderHorario();
+                console.log(`[checkAllDataLoaded] Esperando datos... Config: ${isAppConfigLoaded}, CSV: ${isCsvDataLoaded}`);
             }
         }
 
-        function setFiltro(filtro) {
-            filtroActual = filtro;
-            document.querySelectorAll(".filter-button").forEach(btn => { 
-                btn.classList.remove("active-filter"); 
+    // Función que se llama cuando la configuración (JSON) ha sido cargada
+    function onAppConfigLoaded(configData) {
+        console.log("[onAppConfigLoaded] Función llamada.");
+        // Si configData es una Promise (polyfill web), la resolvemos.
+        // Si es una cadena (Android), la parseamos.
+        Promise.resolve(configData).then(jsonString => {
+            try {
+                appConfig = JSON.parse(jsonString);
+                console.log("[onAppConfigLoaded] JSON de configuración parseado.");
+            } catch (e) {
+                console.error("[onAppConfigLoaded] Error al parsear configData:", e);
+                Android.showToast("Error al procesar la configuración de la app.");
+                // Usar valores por defecto si el parseo falla
+                appConfig = {
+                    "titulos_app": { "h1_horario": "Horario", "h1_informacion": "Información" },
+                    "subtitulo_evento": "Error de carga",
+                    "seccion_informacion": {
+                        "titulo_mapa": "Mapa",
+                        "texto_bienvenida": "Error al cargar la información.",
+                        "titulo_faqs": "FAQs",
+                        "texto_sobre_nosotros": "Información no disponible."
+                    }
+                };
+                console.log("[onAppConfigLoaded] Usando configuración por defecto debido a error de parseo.");
+            }
+            isAppConfigLoaded = true; // Marcar la configuración como cargada
+            console.log("[onAppConfigLoaded] isAppConfigLoaded = true. Llamando a checkAllDataLoaded.");
+            checkAllDataLoaded(); // Intentar mostrar el contenido si todo está listo
+        });
+    }
+
+    // Función para ajustar el tamaño de la fuente del título principal
+    function adjustTitleFontSize() {
+        const logoRect = logoBtn.getBoundingClientRect();
+        const navIconRect = navToggleButton.getBoundingClientRect();
+        const mainContainerRect = document.querySelector('.main-container').getBoundingClientRect();
+
+        const availableWidth = navIconRect.left - logoRect.right;
+
+        const containerPadding = 16;
+        const aestheticMargin = 10;
+        let effectiveWidth = availableWidth - (containerPadding * 2) - (aestheticMargin * 2);
+
+        if (effectiveWidth < 50) effectiveWidth = 50;
+
+        const minFontSizePx = 20;
+        const maxFontSizePx = 45;
+        const minEffectiveWidth = 150;
+        const maxEffectiveWidth = 300;
+
+        let newFontSizePx;
+
+        if (effectiveWidth <= minEffectiveWidth) {
+            newFontSizePx = minFontSizePx;
+        } else if (effectiveWidth >= maxEffectiveWidth) {
+            newFontSizePx = maxFontSizePx;
+        } else {
+            newFontSizePx = minFontSizePx +
+                            (effectiveWidth - minEffectiveWidth) * (maxFontSizePx - minFontSizePx) /
+                            (maxEffectiveWidth - minEffectiveWidth);
+        }
+
+        mainTitleElement.style.fontSize = `${newFontSizePx}px`;
+    }
+
+
+    // Función para actualizar la UI con los datos del JSON
+    function updateUIFromConfig() {
+        console.log("[updateUIFromConfig] Función llamada.");
+        if (!appConfig) {
+            console.warn("[updateUIFromConfig] appConfig no está cargado. Esto no debería ocurrir si onAppConfigLoaded se llamó correctamente.");
+            return;
+        }
+
+        // --- Títulos y Subtítulos ---
+        if (mainTitleElement && appConfig.titulos_app) {
+            mainTitleElement.innerText = appConfig.titulos_app.h1_horario || "Horario";
+        }
+        if (eventSubtitleElement && appConfig.subtitulo_evento) {
+            eventSubtitleElement.innerText = appConfig.subtitulo_evento;
+        }
+
+        // --- Sección de Información ---
+        const infoSection = appConfig.seccion_informacion;
+        if (infoSection) {
+            document.getElementById('info-welcome-text').innerText = infoSection.texto_bienvenida || '';
+
+            // --- MAPA ---
+            const mapTitleElement = document.getElementById('map-section-title');
+            if (mapTitleElement) {
+                mapTitleElement.innerText = infoSection.titulo_mapa || "Mapa";
+            }
+
+            const mapImageElement = document.getElementById('event-map-image');
+            const mapLinkElement = document.getElementById('event-map-link');
+
+            if (mapImageElement && mapLinkElement && infoSection.url_imagen_mapa) {
+                mapImageElement.src = infoSection.url_imagen_mapa;
+                mapImageElement.style.display = 'block';
+
+                if (infoSection.url_pdf_mapa) {
+                    mapLinkElement.href = infoSection.url_pdf_mapa; // Se mantiene el href para accesibilidad y fallback web
+                    mapLinkElement.onclick = function(event) {
+                        event.preventDefault(); // Previene el comportamiento por defecto del enlace
+                        Android.openUrl(infoSection.url_pdf_mapa); // Llama a la función que usa la interfaz Android o el polyfill
+                    };
+                    mapLinkElement.style.display = 'block';
+                } else {
+                    mapLinkElement.href = "#";
+                    mapLinkElement.onclick = null; // Elimina el manejador de clic si no hay URL
+                }
+            } else {
+                console.warn("[updateUIFromConfig] No se pudo cargar el mapa. Elemento, enlace o URL de imagen faltante/inválido.");
+            }
+
+            document.getElementById('info-faq-title').innerText = infoSection.titulo_faqs || '';
+            const faqListElement = document.getElementById('info-faq-list');
+            if (faqListElement && infoSection.faqs && Array.isArray(infoSection.faqs)) {
+                faqListElement.innerHTML = '';
+                infoSection.faqs.forEach(faq => {
+                    const faqItem = document.createElement('div');
+                    faqItem.classList.add('faq-item');
+                    faqItem.innerHTML = `<h3>${faq.pregunta}</h3><p>${faq.respuesta}</p>`;
+                    faqListElement.appendChild(faqItem);
+                });
+            }
+
+            const contactEmailElement = document.getElementById('info-contact-email');
+            if (contactEmailElement && infoSection.email_contacto) {
+                contactEmailElement.href = `mailto:${infoSection.email_contacto}`;
+                contactEmailElement.innerText = infoSection.email_contacto;
+            }
+
+            const socialFacebookElement = document.getElementById('info-social-facebook');
+            if (socialFacebookElement && infoSection.red_social_facebook) {
+                socialFacebookElement.href = infoSection.red_social_facebook;
+                socialFacebookElement.innerText = "Facebook Oficial";
+            }
+
+            const socialInstagramElement = document.getElementById('info-social-instagram');
+            if (socialInstagramElement && infoSection.red_social_instagram) {
+                socialInstagramElement.href = infoSection.red_social_instagram;
+                socialInstagramElement.innerText = "Instagram Oficial";
+            }
+
+            const websiteUrlElement = document.getElementById('info-website-url');
+            if (websiteUrlElement && infoSection.url_web) {
+                websiteUrlElement.href = infoSection.url_web;
+                websiteUrlElement.innerText = infoSection.url_web.replace(/(^\w+:|^)\/\//, '');
+            }
+
+            document.getElementById('info-about-us-text').innerText = infoSection.texto_sobre_nosotros || '';
+        }
+
+        renderHorario();
+        adjustTitleFontSize();
+
+        // Inicializar la primera vista (Horario) y su título/icono
+        updateTitleAndIcon('horario');
+        horarioView.classList.add('active-view');
+        infoView.classList.remove('active-view');
+        console.log("[updateUIFromConfig] UI actualizada y horario renderizado.");
+    }
+
+
+    function agruparPorHora(lista) {
+        const mapa = {};
+        lista.forEach(act => {
+            if (filtroActual === "favoritos" && !favoritos.has(act.id)) return;
+            if (filtroActual !== "todas" && filtroActual !== "favoritos" && act.tipo !== filtroActual) return;
+            if (!mapa[act.hora]) mapa[act.hora] = [];
+            mapa[act.hora].push(act);
+        });
+        return mapa;
+    }
+
+    function renderHorario() {
+        console.log("[renderHorario] Función llamada.");
+        const contenedor = document.getElementById("horario");
+        contenedor.innerHTML = "";
+        const actividadesPorHora = agruparPorHora(actividades[diaActual]);
+        const horas = Object.keys(actividadesPorHora).sort();
+
+        actividadAbierta = null;
+
+        if (horas.length === 0) {
+            // Solo mostrar este mensaje si appConfig ya está disponible Y los datos CSV se han cargado
+            if (appConfig && isCsvDataLoaded) {
+                contenedor.innerHTML = "<p class='text-center text-gray-300'>No hay actividades para esta selección.</p>";
+                console.log("[renderHorario] No hay actividades para la selección actual.");
+            } else {
+                console.log("[renderHorario] No hay actividades, pero appConfig o CSV no están completamente cargados aún.");
+            }
+            return;
+        }
+
+        horas.forEach(hora => {
+            const bloque = document.createElement("div");
+            bloque.innerHTML = `<h3 class="text-sm font-semibold text-gray-200 mb-2">🕒 ${hora}</h3>`;
+            actividadesPorHora[hora].forEach(act => {
+                const card = document.createElement("div");
+                card.className = "bg-white p-4 mb-2 rounded shadow flex justify-between items-center activity-card";
+                card.dataset.id = act.id;
+
+                const isFavoriteClass = favoritos.has(act.id) ? 'is-favorite' : '';
+                const starIconClass = favoritos.has(act.id) ? 'fas' : 'far';
+
+                card.innerHTML = `
+                    <div>
+                        <h2 class="text-lg font-bold">${act.titulo}</h2>
+                        <span class="category-tag ${getColor(act.tipo)}">${formateaCategoria(act.tipo)}</span>
+                        <div class="activity-detail">
+                            ${act.detalle || 'No hay información adicional.'}
+                            ${act.enlace ? `<div class="mt-2"><a href="${act.enlace}" onclick="Android.openUrl(this.href); return false;" class="text-blue-600 underline font-semibold">Apuntarse / Más info</a></div>` : ''}
+                        </div>
+                    </div>
+                    <div class="flex items-center">
+                        <div class="duration-text">⏱ ${act.duracion}</div>
+                        <span class="favorite-btn ${isFavoriteClass}" data-id="${act.id}">
+                            <i class="${starIconClass} fa-star"></i>
+                        </span>
+                    </div>
+                `;
+                card.addEventListener('click', (e) => {
+                    if (e.target.closest('.favorite-btn')) return;
+
+                    const detalle = card.querySelector('.activity-detail');
+
+                    if (actividadAbierta && actividadAbierta !== card) {
+                        actividadAbierta.querySelector('.activity-detail').style.display = 'none';
+                    }
+
+                    detalle.style.display = (detalle.style.display === 'block') ? 'none' : 'block';
+
+                    actividadAbierta = (detalle.style.display === 'block') ? card : null;
+                });
+                bloque.appendChild(card);
             });
-            const btnActivo = Array.from(document.querySelectorAll(".filter-button")) 
-                .find(btn => btn.textContent.toLowerCase().includes(formateaCategoria(filtro).toLowerCase()));
-            if (btnActivo) btnActivo.classList.add("active-filter"); 
+            contenedor.appendChild(bloque);
+        });
+
+        document.querySelectorAll('.favorite-btn').forEach(button => {
+            button.addEventListener('click', toggleFavorite);
+        });
+        console.log("[renderHorario] Horario renderizado con éxito.");
+    }
+
+    function formateaCategoria(tipo) {
+        const mapa = {
+            rol_mesa: "Rol de mesa", rol_vivo: "Rol en vivo", videojuegos: "Videojuegos",
+            juegos_mesa: "Juegos de mesa", deportes: "Deportes", concursos: "Concursos",
+            talleres: "Talleres", charlas: "Charlas", otros: "Otros", favoritos: "Favoritos"
+        };
+        return mapa[tipo] || tipo;
+    }
+
+    function getColor(tipo) {
+        switch (tipo) {
+            case "rol_mesa": return "bg-purple-100 text-purple-700";
+            case "rol_vivo": return "bg-pink-100 text-pink-700";
+            case "videojuegos": return "bg-blue-100 text-blue-700";
+            case "juegos_mesa": return "bg-indigo-100 text-indigo-700";
+            case "deportes": return "bg-yellow-100 text-yellow-700";
+            case "concursos": return "bg-red-100 text-red-700";
+            case "talleres": return "bg-green-100 text-green-700";
+            case "charlas": return "bg-orange-100 text-orange-700";
+            case "otros": return "bg-gray-200 text-gray-800";
+            default: return "bg-gray-100 text-gray-700";
+        }
+    }
+
+    function toggleFavorite(event) {
+        const button = event.currentTarget;
+        const icon = button.querySelector('i');
+        const id = button.dataset.id;
+
+        let actividadCompleta = null;
+        actividadCompleta = actividades.sabado.find(act => act.id === id);
+        if (!actividadCompleta) {
+            actividadCompleta = actividades.domingo.find(act => act.id === id);
+        }
+
+        if (!actividadCompleta) {
+            console.error("ERROR: No se encontró la actividad con ID:", id);
+            if (typeof Android !== 'undefined') {
+                Android.showToast("Error: Actividad no encontrada con ID: " + id + ". Revisa tus datos.");
+            }
+            return;
+        }
+
+        if (favoritos.has(id)) {
+            favoritos.delete(id);
+            button.classList.remove('is-favorite');
+            icon.classList.remove('fas');
+            icon.classList.add('far');
+
+            if (typeof Android !== 'undefined') {
+                Android.cancelarAlertaActividad(actividadCompleta.id);
+            }
+
+        } else {
+            favoritos.add(id);
+            button.classList.add('is-favorite');
+            icon.classList.remove('far');
+            icon.classList.add('fas');
+
+            if (typeof Android !== 'undefined') {
+                const diaActividad = actividadCompleta.dia.toLowerCase().includes("sab") ? "sabado" : "domingo";
+                Android.programarAlertaActividad(
+                    actividadCompleta.id,
+                    actividadCompleta.titulo,
+                    actividadCompleta.hora,
+                    diaActividad
+                );
+            }
+        }
+
+        localStorage.setItem('horarioFavoritos', JSON.stringify(Array.from(favoritos)));
+
+        if (typeof Android !== 'undefined') {
+            Android.showToast("Favoritos guardados: " + Array.from(favoritos).length + " actividades.");
+        }
+
+        if (filtroActual === "favoritos") {
             renderHorario();
         }
+    }
 
-        function parseCSV(text) {
-            const lines = text.trim().split("\n");
-            const headers = lines[0].split(",").map(h => h.trim());
-            return lines.slice(1).map(row => {
-                const values = row.split(",").map(c => c.trim());
-                const obj = {};
-                headers.forEach((h, i) => obj[h] = values[i]);
-                return obj;
-            });
-        }
-
-        function cargarDesdeCSV() {
-            fetch(URL_CSV)
-                .then(resp => resp.text())
-                .then(data => {
-                    const registros = parseCSV(data);
-                    actividades = { sabado: [], domingo: [] }; 
-                    registros.forEach(r => {
-                        if (r["id"] && r["hora"] && r["titulo"] && r["tipo"] && r["duracion"] && r["dia"]) {
-                            const actividad = {
-                                id: r["id"].trim(),
-                                hora: r["hora"].trim(),
-                                titulo: r["titulo"].trim(),
-                                tipo: r["tipo"].toLowerCase().trim(),
-                                duracion: r["duracion"].trim(),
-                                dia: r["dia"].trim(),
-                                detalle: r["detalle"]?.trim() || "",
-                                enlace: r["enlace"]?.trim() || ""
-                            };
-                            const dia = r["dia"].toLowerCase();
-                            if (dia.includes("sab")) actividades.sabado.push(actividad);
-                            else if (dia.includes("dom")) actividades.domingo.push(actividad);
-                        }
-                    });
-                    renderHorario(); 
-                })
-                .catch(error => console.error("Error al cargar el CSV:", error));
-        }
-
-        function updateTitleAndIcon(view) {
-            if (!appConfig) return; 
-
-            if (view === 'horario') {
-                mainTitleElement.innerText = appConfig.titulos_app.h1_horario || "Horario";
-                adjustTitleFontSize(); 
-
-                navToggleIcon.classList.remove('fa-arrow-left');
-                navToggleIcon.classList.add('fa-info');
-            } else if (view === 'info') { 
-                mainTitleElement.innerText = appConfig.titulos_app.h_informacion || "Información";
-                adjustTitleFontSize(); 
-
-                navToggleIcon.classList.remove('fa-info');
-                navToggleIcon.classList.add('fa-arrow-left');
-            }
-        }
-
-        function toggleView() {
-            if (horarioView.classList.contains('active-view')) {
-                horarioView.classList.remove('active-view');
-                infoView.classList.add('active-view');
-                updateTitleAndIcon('info');
-            } else {
-                infoView.classList.remove('active-view');
-                horarioView.classList.add('active-view');
-                updateTitleAndIcon('horario');
-            }
-        }
-
-        // --- EVENT LISTENERS ---
-
-        document.getElementById("dia1Btn").addEventListener("click", () => {
-            if (horarioView.classList.contains('active-view')) {
-                diaActual = "sabado";
-                document.getElementById("dia1Btn").classList.add("active");
-                document.getElementById("dia2Btn").classList.remove("active"); 
-                renderHorario();
-            }
+    function setFiltro(filtro) {
+        filtroActual = filtro;
+        document.querySelectorAll(".filter-button").forEach(btn => {
+            btn.classList.remove("active-filter");
         });
+        const btnActivo = Array.from(document.querySelectorAll(".filter-button"))
+            .find(btn => btn.textContent.toLowerCase().includes(formateaCategoria(filtro).toLowerCase()));
+        if (btnActivo) btnActivo.classList.add("active-filter");
+        renderHorario();
+    }
 
-        document.getElementById("dia2Btn").addEventListener("click", () => {
-            if (horarioView.classList.contains('active-view')) {
-                diaActual = "domingo";
-                document.getElementById("dia2Btn").classList.add("active"); 
-                document.getElementById("dia1Btn").classList.remove("active"); 
-                renderHorario();
-            }
+    function parseCSV(text) {
+        const lines = text.trim().split("\n");
+        const headers = lines[0].split(",").map(h => h.trim());
+        return lines.slice(1).map(row => {
+            const values = row.split(",").map(c => c.trim());
+            const obj = {};
+            headers.forEach((h, i) => obj[h] = values[i]);
+            return obj;
         });
-        
-        navToggleButton.addEventListener('click', (e) => {
-            e.preventDefault(); 
-            toggleView();
-        });
+    }
 
-        logoBtn.addEventListener('click', () => {
-            if (infoView.classList.contains('active-view')) { 
-                toggleView(); 
-            }
-        });
-
-        // --- INICIALIZACIÓN ---
-        // La carga de CSV se mantiene aquí, ya que es independiente de la configuración inicial de la app
-        cargarDesdeCSV(); 
-
-        document.addEventListener('DOMContentLoaded', function() {
-    // Si window.appConfigJson existe (estamos en Android WebView), lo usamos.
-    // Si no, lo cargamos desde la URL para la versión web.
-    if (window.appConfigJson) {
-        appConfig = JSON.parse(window.appConfigJson); // Esta línea es crucial para Android
-        onAppConfigLoaded();
-    } else {
-        // Versión web: Cargar config.json directamente
-        fetch(CONFIG_JSON_WEB_URL)
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
+    function cargarDesdeCSV() {
+        console.log("[cargarDesdeCSV] Iniciando carga de CSV desde:", URL_CSV);
+        fetch(URL_CSV)
+            .then(resp => {
+                if (!resp.ok) {
+                    throw new Error(`HTTP error! status: ${resp.status}`);
                 }
-                return response.json();
+                return resp.text();
             })
             .then(data => {
-                appConfig = data;
-                onAppConfigLoaded();
+                const registros = parseCSV(data);
+                actividades = { sabado: [], domingo: [] };
+                registros.forEach(r => {
+                    if (r["id"] && r["hora"] && r["titulo"] && r["tipo"] && r["duracion"] && r["dia"]) {
+                        const actividad = {
+                            id: r["id"].trim(),
+                            hora: r["hora"].trim(),
+                            titulo: r["titulo"].trim(),
+                            tipo: r["tipo"].toLowerCase().trim(),
+                            duracion: r["duracion"].trim(),
+                            dia: r["dia"].trim(),
+                            detalle: r["detalle"]?.trim() || "",
+                            enlace: r["enlace"]?.trim() || ""
+                        };
+                        const dia = r["dia"].toLowerCase();
+                        if (dia.includes("sab")) actividades.sabado.push(actividad);
+                        else if (dia.includes("dom")) actividades.domingo.push(actividad);
+                    }
+                });
+                isCsvDataLoaded = true; // Marcar los datos CSV como cargados
+                console.log("[cargarDesdeCSV] Datos CSV cargados con éxito. Llamando a checkAllDataLoaded.");
+                checkAllDataLoaded(); // Intentar mostrar el contenido si todo está listo
             })
             .catch(error => {
-                console.error("Error al cargar config.json para la versión web:", error);
-                Android.showToast("Error al cargar la configuración de la app desde la web.");
+                console.error("[cargarDesdeCSV] Error al cargar el CSV:", error);
+                Android.showToast("Error al cargar los datos del horario.");
+                isCsvDataLoaded = true; // Marcar como cargado (con error) para no bloquear el splash
+                checkAllDataLoaded(); // Intentar mostrar el contenido incluso con error CSV
+            });
+    }
+
+    function updateTitleAndIcon(view) {
+        if (!appConfig) return;
+
+        if (view === 'horario') {
+            mainTitleElement.innerText = appConfig.titulos_app.h1_horario || "Horario";
+            adjustTitleFontSize();
+
+            navToggleIcon.classList.remove('fa-arrow-left');
+            navToggleIcon.classList.add('fa-info');
+        } else if (view === 'info') {
+            mainTitleElement.innerText = appConfig.titulos_app.h1_informacion || "Información";
+            adjustTitleFontSize();
+
+            navToggleIcon.classList.remove('fa-info');
+            navToggleIcon.classList.add('fa-arrow-left');
+        }
+    }
+
+    function toggleView() {
+        if (horarioView.classList.contains('active-view')) {
+            horarioView.classList.remove('active-view');
+            infoView.classList.add('active-view');
+            updateTitleAndIcon('info');
+        } else {
+            infoView.classList.remove('active-view');
+            horarioView.classList.add('active-view');
+            updateTitleAndIcon('horario');
+        }
+    }
+
+    // --- EVENT LISTENERS ---
+
+    document.getElementById("dia1Btn").addEventListener("click", () => {
+        if (horarioView.classList.contains('active-view')) {
+            diaActual = "sabado";
+            document.getElementById("dia1Btn").classList.add("active");
+            document.getElementById("dia2Btn").classList.remove("active");
+            renderHorario();
+        }
+    });
+
+    document.getElementById("dia2Btn").addEventListener("click", () => {
+        if (horarioView.classList.contains('active-view')) {
+            diaActual = "domingo";
+            document.getElementById("dia2Btn").classList.add("active");
+            document.getElementById("dia1Btn").classList.remove("active");
+            renderHorario();
+        }
+    });
+
+    navToggleButton.addEventListener('click', (e) => {
+        e.preventDefault();
+        toggleView();
+    });
+
+    logoBtn.addEventListener('click', () => {
+        if (infoView.classList.contains('active-view')) {
+            toggleView();
+        }
+    });
+
+    // --- INICIALIZACIÓN ---
+    // Cargar datos del CSV al inicio
+    cargarDesdeCSV();
+
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log("[DOMContentLoaded] DOM completamente cargado.");
+        // Asegúrate de que el contenido principal esté oculto al inicio
+        mainContentWrapper.classList.remove('loaded');
+        console.log("[DOMContentLoaded] main-content-wrapper oculto por defecto.");
+
+        // Ahora, la configuración se obtiene de la interfaz Android
+        if (typeof Android !== 'undefined' && Android.getAppConfig) {
+            console.log("[DOMContentLoaded] Android.getAppConfig detectado. Llamando a onAppConfigLoaded.");
+            Android.getAppConfig().then(configJsonString => {
+                onAppConfigLoaded(configJsonString);
+            }).catch(error => {
+                console.error("[DOMContentLoaded] Error al obtener config de Android:", error);
+                Android.showToast("Error al obtener la configuración de la app.");
                 // Si falla la carga del JSON, al menos intenta inicializar con valores por defecto
-                appConfig = {
+                const defaultAppConfig = {
                     "titulos_app": { "h1_horario": "Horario", "h1_informacion": "Información" },
                     "subtitulo_evento": "Cargando evento...",
                     "seccion_informacion": {
@@ -838,19 +945,19 @@ function updateUIFromConfig() {
                         "texto_sobre_nosotros": "Sobre nosotros."
                     }
                 };
-                onAppConfigLoaded();
+                console.log("[DOMContentLoaded] Usando configuración por defecto debido a error de carga.");
+                onAppConfigLoaded(JSON.stringify(defaultAppConfig)); // Llamar con objeto por defecto como string
             });
-    }
-    
-    updateTitleAndIcon('horario'); 
-    horarioView.classList.add('active-view');
-    infoView.classList.remove('active-view');
+        } else {
+            console.warn("[DOMContentLoaded] Android.getAppConfig NO detectado. Esto solo debería ocurrir en la versión web de depuración.");
+            // En la versión web, el polyfill ya manejará la carga de config.json localmente
+            // y onAppConfigLoaded se llamará con el resultado de esa Promise.
+            // No se necesita `fetch` explícito aquí para la versión web.
+            console.log("[DOMContentLoaded] En entorno web, el polyfill de Android.getAppConfig se encargará.");
+        }
 
-    window.addEventListener('resize', adjustTitleFontSize);
-});
-
-            
-            
-    </script>
+        window.addEventListener('resize', adjustTitleFontSize);
+    });
+</script>
 </body>
 </html>
