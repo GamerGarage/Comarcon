@@ -8,7 +8,7 @@
   "mes_evento": 7,
   "dia_evento_sabado": 21,
   "dia_evento_domingo": 22,
-  "prefijo_notificacion": "¡Recordatorio de Comarcon! ",
+  "prefijo_notificacion": "¡Recordatorio de ComarCON! ",
   "minutos_desfase_alarma": 15,
 
   "seccion_informacion": {
@@ -35,7 +35,7 @@
         "respuesta": "Sí, hay aparcamiento público cerca del recinto."
       }
     ],
-    "texto_sobre_nosotros": "Comarcon es un evento organizado por la Asociacion Juvenil La Comarca, dedicado a la cultura del ocio alterntivo. Nuestro objetivo es crear un espacio de encuentro para la comunidad y promover el entretenimiento interactivo.",
+    "texto_sobre_nosotros": "Comarcon es un evento organizado por la Asociacion Juvenil La Comarca, dedicado a la cultura del ocio alterntivo. Nuestro objetivo es crear un espacio de encuentro para la comunidad y promover el entretenimiento.",
     "url_web": "https://lacomarcon.com"
   }
 }
