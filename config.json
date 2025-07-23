@@ -48,6 +48,7 @@
     { "id": "deportes", "nombre_mostrar": "Deportes", "clase_tailwind": "bg-yellow-100 text-yellow-700" },
     { "id": "concursos", "nombre_mostrar": "Concursos", "clase_tailwind": "bg-red-100 text-red-700" },
     { "id": "talleres", "nombre_mostrar": "Talleres", "clase_tailwind": "bg-green-100 text-green-700" },
-    { "id": "charlas", "nombre_mostrar": "Charlas", "clase_tailwind": "bg-orange-100 text-orange-700" }
+    { "id": "charlas", "nombre_mostrar": "Charlas", "clase_tailwind": "bg-orange-100 text-orange-700" },
+    { "id": "otros", "nombre_mostrar": "Otros", "clase_tailwind": "bg-gray-300 text-gray-800" }
   ]
 }
