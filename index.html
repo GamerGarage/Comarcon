@@ -68,7 +68,7 @@
             position: absolute;
             left: 1rem;
             top: 1rem;
-            //border-radius: 9999px; /* rounded-full de Tailwind */
+            /* border-radius: 9999px; /* rounded-full de Tailwind */
         }
 
         /* Estilo para el contenedor del icono de navegación (info/back) */
@@ -193,21 +193,12 @@
         }
 
         /* Contenedores de vista (horario/información) */
-        /* Inicialmente ocultos para evitar el parpadeo */
         .view-container {
-            display: none;
+            display: none; /* Oculto por defecto */
         }
         .view-container.active-view {
             display: block; /* Visible cuando está activo */
         }
-        /* Ocultar el contenido principal hasta que se cargue la configuración */
-        .main-content-wrapper {
-            display: none;
-        }
-        .main-content-wrapper.loaded {
-            display: block;
-        }
-
 
         /* Estilos para la sección de Información */
         .info-section-content {
@@ -277,8 +268,7 @@
     </style>
 </head>
 <body class="text-gray-800">
-<!-- Nuevo contenedor para el contenido principal, inicialmente oculto -->
-<div class="max-w-md mx-auto p-4 relative main-container main-content-wrapper">
+<div class="max-w-md mx-auto p-4 relative main-container">
     <div class="mb-4">
         <img src="estrella-trans.png" alt="Logo La Comarcón" class="logo-img" id="logo-btn" />
 
@@ -292,24 +282,15 @@
     </div>
 
     <!-- Contenedor para la vista de Horario -->
-    <div id="horario-view" class="view-container">
+    <div id="horario-view" class="view-container active-view">
         <div class="flex justify-center mb-4 space-x-2">
             <button id="dia1Btn" class="day-button active">Sábado</button>
             <button id="dia2Btn" class="day-button">Domingo</button>
         </div>
 
-        <div class="flex overflow-x-auto mb-4 space-x-2 pb-2">
-            <button onclick="setFiltro('todas')" class="filter-button bg-gray-200 text-gray-800 active-filter">Todas</button>
-            <button onclick="setFiltro('favoritos')" class="filter-button bg-yellow-200 text-yellow-800">⭐ Favoritos</button>
-            <button onclick="setFiltro('rol_mesa')" class="filter-button bg-purple-100 text-purple-700">Rol de mesa</button>
-            <button onclick="setFiltro('rol_vivo')" class="filter-button bg-pink-100 text-pink-700">Rol en vivo</button>
-            <button onclick="setFiltro('videojuegos')" class="filter-button bg-blue-100 text-blue-700">Videojuegos</button>
-            <button onclick="setFiltro('juegos_mesa')" class="filter-button bg-indigo-100 text-indigo-700">Juegos de mesa</button>
-            <button onclick="setFiltro('deportes')" class="filter-button bg-yellow-100 text-yellow-700">Deportes</button>
-            <button onclick="setFiltro('concursos')" class="filter-button bg-red-100 text-red-700">Concursos</button>
-            <button onclick="setFiltro('talleres')" class="filter-button bg-green-100 text-green-700">Talleres</button>
-            <button onclick="setFiltro('charlas')" class="filter-button bg-orange-100 text-orange-700">Charlas</button>
-            <button onclick="setFiltro('otros')" class="filter-button bg-gray-300 text-gray-800">Otros</button>
+        <!-- Nuevo contenedor para los botones de filtro generados dinámicamente -->
+        <div id="filter-buttons-container" class="flex overflow-x-auto mb-4 space-x-2 pb-2">
+            <!-- Los botones de filtro se generarán aquí con JavaScript -->
         </div>
 
         <div id="horario" class="space-y-4"></div>
@@ -350,7 +331,7 @@
 <script>
     let actividades = { sabado: [], domingo: [] };
     let diaActual = "sabado";
-    let filtroActual = "todas";
+    let filtroActual = "todas"; // Valor inicial del filtro
     let favoritos = new Set(JSON.parse(localStorage.getItem('horarioFavoritos')) || []);
     let actividadAbierta = null;
     let appConfig = null; // Variable global para almacenar la configuración del JSON
@@ -368,12 +349,16 @@
 
     const horarioView = document.getElementById('horario-view');
     const infoView = document.getElementById('info-view');
-    const mainContentWrapper = document.querySelector('.main-content-wrapper'); // Contenedor principal de contenido
+    const mainContentWrapper = document.querySelector('.main-container'); // Contenedor principal de contenido
 
     let currentView = 'horario';
 
     // URL de tu Google Sheet exportado como CSV
     const URL_CSV = "https://corsproxy.io/?url=https://docs.google.com/spreadsheets/d/e/2PACX-1vQVrAqpQlI4uhoa45UBxoRxsrnUB54QJ_LR5WgScbfFEGwkUannAa-0jRONdjsOwRoJ2hYNbMMAqcw-/pub?gid=0&single=true&output=csv";
+
+    // URL del archivo config.json para la versión web
+    // !!! IMPORTANTE: REEMPLAZA ESTA URL CON LA URL PÚBLICA DE TU CONFIG.JSON !!!
+    const CONFIG_JSON_WEB_URL = "https://gamergarage.github.io/Comarcon/config.json";
 
     // --- Polyfill para el objeto Android en la versión web ---
     // Esto evita errores cuando la app no se ejecuta en un WebView de Android
@@ -446,7 +431,7 @@
                 updateUIFromConfig(); // Actualiza la UI con la configuración y renderiza el horario
 
                 // Asegurarse de que el contenido principal sea visible
-                mainContentWrapper.classList.add('loaded');
+                mainContentWrapper.classList.add('loaded'); // Asegúrate de que esta clase existe en tu CSS para mostrar el contenido
                 console.log("[checkAllDataLoaded] Clase 'loaded' añadida al main-content-wrapper.");
 
                 // Notificar a Kotlin que el contenido HTML/JS se ha renderizado y está listo
@@ -600,13 +585,13 @@
             const socialFacebookElement = document.getElementById('info-social-facebook');
             if (socialFacebookElement && infoSection.red_social_facebook) {
                 socialFacebookElement.href = infoSection.red_social_facebook;
-                socialFacebookElement.innerText = "Facebook";
+                socialFacebookElement.innerText = "Facebook Oficial";
             }
 
             const socialInstagramElement = document.getElementById('info-social-instagram');
             if (socialInstagramElement && infoSection.red_social_instagram) {
                 socialInstagramElement.href = infoSection.red_social_instagram;
-                socialInstagramElement.innerText = "Instagram";
+                socialInstagramElement.innerText = "Instagram Oficial";
             }
 
             const websiteUrlElement = document.getElementById('info-website-url');
@@ -618,6 +603,7 @@
             document.getElementById('info-about-us-text').innerText = infoSection.texto_sobre_nosotros || '';
         }
 
+        renderFilterButtons(); // Llama a esta función para generar los botones de filtro
         renderHorario();
         adjustTitleFontSize();
 
@@ -674,7 +660,7 @@
                 card.innerHTML = `
                     <div>
                         <h2 class="text-lg font-bold">${act.titulo}</h2>
-                        <span class="category-tag ${getColor(act.tipo)}">${formateaCategoria(act.tipo)}</span>
+                        <span class="category-tag ${getCategoryStyle(act.tipo)}">${getCategoryDisplayName(act.tipo)}</span>
                         <div class="activity-detail">
                             ${act.detalle || 'No hay información adicional.'}
                             ${act.enlace ? `<div class="mt-2"><a href="${act.enlace}" onclick="Android.openUrl(this.href); return false;" class="text-blue-600 underline font-semibold">Apuntarse / Más info</a></div>` : ''}
@@ -711,28 +697,45 @@
         console.log("[renderHorario] Horario renderizado con éxito.");
     }
 
-    function formateaCategoria(tipo) {
-        const mapa = {
-            rol_mesa: "Rol de mesa", rol_vivo: "Rol en vivo", videojuegos: "Videojuegos",
-            juegos_mesa: "Juegos de mesa", deportes: "Deportes", concursos: "Concursos",
-            talleres: "Talleres", charlas: "Charlas", otros: "Otros", favoritos: "Favoritos"
-        };
-        return mapa[tipo] || tipo;
+    // Nueva función para obtener el nombre a mostrar de la categoría
+    function getCategoryDisplayName(idCategoria) {
+        if (!appConfig || !appConfig.categorias_filtro) return idCategoria; // Fallback
+        const categoria = appConfig.categorias_filtro.find(cat => cat.id === idCategoria);
+        return categoria ? categoria.nombre_mostrar : idCategoria;
     }
 
-    function getColor(tipo) {
-        switch (tipo) {
-            case "rol_mesa": return "bg-purple-100 text-purple-700";
-            case "rol_vivo": return "bg-pink-100 text-pink-700";
-            case "videojuegos": return "bg-blue-100 text-blue-700";
-            case "juegos_mesa": return "bg-indigo-100 text-indigo-700";
-            case "deportes": return "bg-yellow-100 text-yellow-700";
-            case "concursos": return "bg-red-100 text-red-700";
-            case "talleres": return "bg-green-100 text-green-700";
-            case "charlas": return "bg-orange-100 text-orange-700";
-            case "otros": return "bg-gray-200 text-gray-800";
-            default: return "bg-gray-100 text-gray-700";
+    // Nueva función para obtener las clases de estilo de la categoría
+    function getCategoryStyle(idCategoria) {
+        if (!appConfig || !appConfig.categorias_filtro) return "bg-gray-100 text-gray-700"; // Fallback
+        const categoria = appConfig.categorias_filtro.find(cat => cat.id === idCategoria);
+        return categoria ? categoria.clase_tailwind : "bg-gray-100 text-gray-700";
+    }
+
+    // Función para generar dinámicamente los botones de filtro
+    function renderFilterButtons() {
+        const container = document.getElementById('filter-buttons-container');
+        container.innerHTML = ''; // Limpiar botones existentes
+
+        if (!appConfig || !appConfig.categorias_filtro) {
+            console.warn("No se pudieron cargar las categorías de filtro desde appConfig.");
+            return;
         }
+
+        appConfig.categorias_filtro.forEach(categoria => {
+            const button = document.createElement('button');
+            button.onclick = () => setFiltro(categoria.id);
+            button.classList.add('filter-button');
+            button.classList.add(...categoria.clase_tailwind.split(' ')); // Añadir clases de Tailwind
+
+            // Establecer el filtro inicial como activo
+            if (categoria.id === filtroActual) {
+                button.classList.add('active-filter');
+            }
+
+            button.textContent = categoria.nombre_mostrar;
+            container.appendChild(button);
+        });
+        console.log("Botones de filtro generados dinámicamente.");
     }
 
     function toggleFavorite(event) {
@@ -794,12 +797,17 @@
 
     function setFiltro(filtro) {
         filtroActual = filtro;
+        // Quitar la clase 'active-filter' de todos los botones
         document.querySelectorAll(".filter-button").forEach(btn => {
             btn.classList.remove("active-filter");
         });
+        // Añadir la clase 'active-filter' al botón correspondiente
+        // Ahora buscamos por el data-id o por el texto exacto si lo necesitamos
         const btnActivo = Array.from(document.querySelectorAll(".filter-button"))
-            .find(btn => btn.textContent.toLowerCase().includes(formateaCategoria(filtro).toLowerCase()));
-        if (btnActivo) btnActivo.classList.add("active-filter");
+            .find(btn => btn.onclick.toString().includes(`setFiltro('${filtro}')`)); // Buscar por la función onclick
+        if (btnActivo) {
+            btnActivo.classList.add("active-filter");
+        }
         renderHorario();
     }
 
@@ -923,8 +931,8 @@
     document.addEventListener('DOMContentLoaded', function() {
         console.log("[DOMContentLoaded] DOM completamente cargado.");
         // Asegúrate de que el contenido principal esté oculto al inicio
-        mainContentWrapper.classList.remove('loaded');
-        console.log("[DOMContentLoaded] main-content-wrapper oculto por defecto.");
+        // mainContentWrapper.classList.remove('loaded'); // Esta línea ya no es necesaria si el display:none inicial se maneja de otra forma
+        // console.log("[DOMContentLoaded] main-content-wrapper oculto por defecto."); // Este log también puede ser eliminado
 
         // Ahora, la configuración se obtiene de la interfaz Android
         if (typeof Android !== 'undefined' && Android.getAppConfig) {
@@ -943,7 +951,11 @@
                         "texto_bienvenida": "Bienvenido.",
                         "titulo_faqs": "FAQs",
                         "texto_sobre_nosotros": "Sobre nosotros."
-                    }
+                    },
+                    "categorias_filtro": [ // Default categories for fallback
+                        { "id": "todas", "nombre_mostrar": "Todas", "clase_tailwind": "bg-gray-200 text-gray-800" },
+                        { "id": "favoritos", "nombre_mostrar": "⭐ Favoritos", "clase_tailwind": "bg-yellow-200 text-yellow-800" }
+                    ]
                 };
                 console.log("[DOMContentLoaded] Usando configuración por defecto debido a error de carga.");
                 onAppConfigLoaded(JSON.stringify(defaultAppConfig)); // Llamar con objeto por defecto como string
@@ -961,3 +973,4 @@
 </script>
 </body>
 </html>
+
