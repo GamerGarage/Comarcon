@@ -17,6 +17,15 @@
     <title>Horario - La Comarcón</title>
 
     <style>
+        /* Definición de la fuente personalizada */
+        @font-face {
+            font-family: 'ComarCON_FONT'; /* Nombre que usarás en CSS */
+            src: url('fonts/FORTQUINSY.otf') format('opentype'); /* Ruta relativa a la carpeta 'fonts' y formato OTF */
+            font-weight: normal;
+            font-style: normal;
+            font-display: swap; /* Carga la fuente de forma asíncrona, mostrando un fallback mientras */
+        }
+
         /* Estilos generales */
         body {
             background-color: #990099; /* Morado de la captura */
@@ -38,7 +47,7 @@
 
         /* Estilos para el título H1 */
         h1 {
-            font-family: 'Permanent Marker', cursive;
+            font-family: 'ComarCON_FONT', cursive; /* Usa tu fuente personalizada aquí */
             color: #ecf0f1;
             text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
             transition: font-size 0.3s ease-in-out;
@@ -413,7 +422,11 @@
                                     "texto_bienvenida": "Error al cargar la información.",
                                     "titulo_faqs": "FAQs",
                                     "texto_sobre_nosotros": "Información no disponible."
-                                }
+                                },
+                                "categorias_filtro": [ // Default categories for fallback
+                                    { "id": "todas", "nombre_mostrar": "Todas", "clase_tailwind": "bg-gray-200 text-gray-800" },
+                                    { "id": "favoritos", "nombre_mostrar": "⭐ Favoritos", "clase_tailwind": "bg-yellow-200 text-yellow-800" }
+                                ]
                             }));
                         });
                 });
@@ -470,7 +483,11 @@
                         "texto_bienvenida": "Error al cargar la información.",
                         "titulo_faqs": "FAQs",
                         "texto_sobre_nosotros": "Información no disponible."
-                    }
+                    },
+                    "categorias_filtro": [ // Default categories for fallback
+                        { "id": "todas", "nombre_mostrar": "Todas", "clase_tailwind": "bg-gray-200 text-gray-800" },
+                        { "id": "favoritos", "nombre_mostrar": "⭐ Favoritos", "clase_tailwind": "bg-yellow-200 text-yellow-800" }
+                    ]
                 };
                 console.log("[onAppConfigLoaded] Usando configuración por defecto debido a error de parseo.");
             }
@@ -973,4 +990,5 @@
 </script>
 </body>
 </html>
+
 
