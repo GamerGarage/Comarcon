@@ -5,11 +5,11 @@
   },
   "subtitulo_evento": "Torrevieja - 2026",
   "ano_evento": 2025,
-  "mes_evento": 7,
-  "dia_evento_sabado": 21,
-  "dia_evento_domingo": 22,
+  "mes_evento": 8,
+  "dia_evento_sabado": 18,
+  "dia_evento_domingo": 19,
   "prefijo_notificacion": "¡Recordatorio de ComarCON! ",
-  "minutos_desfase_alarma": 15,
+  "minutos_desfase_alarma": 5,
 
   "seccion_informacion": {
     "texto_bienvenida": "¡Bienvenido a La ComarCON 2026! Prepárate para dos días llenos de diversión, juegos y competición en el corazón de Torrevieja. Explora el horario, marca tus actividades favoritas y recibe notificaciones para no perderte nada.",
