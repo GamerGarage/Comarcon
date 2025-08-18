@@ -8,7 +8,7 @@
   "mes_evento": 8,
   "dia_evento_sabado": 18,
   "dia_evento_domingo": 19,
-  "prefijo_notificacion": "¡Recordatorio de ComarCON! ",
+  "prefijo_notificacion": "¡Alerta ComarCON! ",
   "minutos_desfase_alarma": 5,
 
   "seccion_informacion": {
